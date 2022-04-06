@@ -22,6 +22,8 @@ function sm_getPowerPerChannel(filename,channel,varargin)
 %%
 % parse inputs
 
+fprintf("Function sm_getPowerPerChannel called with variables\nfilename=%s\nchannel=%i",filename,channel);
+
 p = inputParser;
 
 
