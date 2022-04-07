@@ -1,6 +1,7 @@
 # Steve's readme
 The code we care about is the `IHKA` folder. The workflow is as follows
 - `sm_MakeAll_getPowerPerChannel` calculates feature files to save to disk as `.dat` files for later use
+  - which calls `sm_getPowerPerChannel`
 - `sm_PredictIHKA_getAllFeatures` calculates features for the subset of relevant times and save as `.mat` for more immediate use
 - `sm_PredictIHKA` trains a model(s?) and computes performance metrics
 - `sm_MakeAllSeizurePred` runs model(s?) for all times for all files

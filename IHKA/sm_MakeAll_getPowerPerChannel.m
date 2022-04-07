@@ -27,8 +27,8 @@ edf_fils = fils_edf(ismember(b_edf,goodFils));
 %%
 
 
-% masterDir = 'E:\data\IHKA';
-masterDir = '/Users/steve/Documents/code/unm/McKenzieLab/data/IHKA_output';
+% % masterDir = 'E:\data\IHKA';
+% masterDir = '/Users/steve/Documents/code/unm/McKenzieLab/data/IHKA_output'; 
 
 fprintf("length fils_edf = %i\n", length(fils_edf));
 
@@ -36,7 +36,7 @@ fprintf("length fils_edf = %i\n", length(fils_edf));
 %%% Steve code for testing purposes
 
 % check if file exists
-f_edf = fils_edf{1}; 
+f_edf = fils_edf{1};  % just pick the one
 
 for j = 1:4
     fprintf("Running sm_getPowerPerChannel for channel %i\n", j);

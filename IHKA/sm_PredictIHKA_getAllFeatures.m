@@ -7,14 +7,15 @@
 % prepare feature files
 
 
+% % path where raw data is stored with seizure labels
+% ops.RawDataPath = 'R:\IHKA_Scharfman\IHKA data';  % is this the .dat or the .edf files?
+% ops.FeaturePath = {'F:\data1\IHKA','E:\data\IHKA'};     % why are there two paths here?
+% ops.FeatureFileOutput = 'E:\data\IHKA\features.mat';    % where to store the features
 
-
-
-%path where raw data is stored with seizure labels
-ops.RawDataPath = 'R:\IHKA_Scharfman\IHKA data';
-ops.FeaturePath = {'F:\data1\IHKA','E:\data\IHKA'};
-ops.FeatureFileOutput = 'E:\data\IHKA\features.mat';
-
+ops.RawDataPath = '/Users/steve/Documents/code/unm/McKenzieLab/data/small_data'; % best guess...
+ops.FeaturePath = {'/Users/steve/Documents/code/unm/McKenzieLab/data/IHKA_output'}; % this is what 
+% we replaced E:\data\IHKA with in sm_getPowerPerChannel.m (there it was called 'masterDir')
+ops.FeatureFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/IHKA_output/features.mat';
 
 % define time windows around to predict (s)
 
@@ -33,7 +34,7 @@ ops.pct = [.05 .05 .2 1 1 .2];
 
 ops.nBins = length(ops.pct);
 
-%define postIctal time, 600s after seizure offset
+% define postIctal time, 600s after seizure offset
 ops.timPost = 600;
 
 % info for full feature space
@@ -95,23 +96,21 @@ edf_fils = fils_edf(ismember(b_edf,goodFils));
 
 sessions = [];
 
-%find feature files that match annotation file
+% find feature files that match annotation file
 for j = 1:length(ops.FeaturePath)
-d = dir(ops.FeaturePath{j});
-d = {d(cell2mat({d.isdir})).name}';
-[a,b] = fileparts(seizure_fils);
-seizure_fils_txt = regexprep(b,' ','_');
-[~,b] = ismember(seizure_fils_txt,d);
-kp = b>0;
-b(~kp) =[];
-seizure_filst = seizure_fils(kp);
-
-
-% save list of file names for the paired annotation/feature files
-
-sessions = [sessions;seizure_filst cellfun(@(a) [ops.FeaturePath{j} filesep a filesep a],d(b),'uni',0)];
-
-
+    d = dir(ops.FeaturePath{j});
+    d = {d(cell2mat({d.isdir})).name}';
+    [a,b] = fileparts(seizure_fils);
+    seizure_fils_txt = regexprep(b,' ','_');
+    [~,b] = ismember(seizure_fils_txt,d);
+    kp = b>0;
+    b(~kp) =[];
+    seizure_filst = seizure_fils(kp);
+    
+    
+    % save list of file names for the paired annotation/feature files
+    
+    sessions = [sessions;seizure_filst cellfun(@(a) [ops.FeaturePath{j} filesep a filesep a],d(b),'uni',0)];
 
 end
 
@@ -131,7 +130,9 @@ TSname2 = 'ends';
 % loop over all seizures
 for i= 1:size(sessions,1)
     
-    %  tims{i} = [NxM] , N = seizure number, M = timestamp for bin of interest length(bins)+2
+    % tims{i} = [NxM] , N = seizure number, M = timestamp for bin of interest length(bins)+2
+    % Steve: hmm, it seems that the code becomes buggy if there are no
+    % seizures... so we need a sample with seizures... 
     tims{i} = [];
     
     
@@ -191,17 +192,15 @@ for i = 1:nSessions
     
     %loop of time bins
     for k = 1:ops.nBins
-        
+        fprintf("i=%i, k=%i\n", i,k);
+        fprintf("tims{i}=%f\n", tims{i}); % nothing prints here
+        fprintf("%f\n", ops.pct(k));
+        fprintf("%f", tims{i}(:,k:k+1)); % this is where the bug is
         
         %choose random subset (pct) of samples within each session to train
         %model
         
-        sz{k} = getXPctTim(tims{i}(:,k:k+1), ops.pct(k),1);
-        
-        
-        
-        
-        
+        sz{k} = getXPctTim(tims{i}(:,k:k+1), ops.pct(k),1);       
         
         %loop over all timepoints for each session for each bin
         for ev = 1:numel(sz{k})

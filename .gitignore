@@ -4,6 +4,7 @@
 *.ipynb
 *.dat
 *.mat
+*.asv
 IHKA/playground.m
 data/data_15min.txt
 data/AC75a-5 DOB 072519_TS_2020-03-23_17_30_04.txt
