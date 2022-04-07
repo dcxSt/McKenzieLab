@@ -22,6 +22,7 @@ function sm_getPowerPerChannel(filename,channel,varargin)
 %%
 % parse inputs
 
+% print statements for the user
 fprintf("Function sm_getPowerPerChannel called with variables\nfilename=%s\nchannel=%i",filename,channel);
 
 p = inputParser;
@@ -62,8 +63,9 @@ end
 
 
 if isempty(dirOut)
-    masterDir = 'E:\data\IHKA';
-    [a,basename] = fileparts(fileOut); % define output directory
+    % masterDir is the directory where the .dat files are stored; previously 'E:\data\IHKA'
+    masterDir = '/Users/steve/Documents/code/unm/McKenzieLab/data/IHKA_output';
+    [~,basename] = fileparts(fileOut);          % define output directory
     dirOut = [masterDir filesep basename ];
 end
 

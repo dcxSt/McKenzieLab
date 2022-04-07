@@ -1,3 +1,4 @@
+% this function was previously in /helpers/
 function fileList = getAllExtFiles(dirName,ext,rec)
 
 dirData = dir(dirName);      %# Get the data for the current directory

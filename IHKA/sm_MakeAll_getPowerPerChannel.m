@@ -1,11 +1,11 @@
 %find seizures with files that have been converted to edf
+
 % addpath('/Users/steve/Documents/code/unm/McKenzieLab/helpers/getAllExtFiles.m');
 % addpath('/Users/steve/Documents/code/unm/buzcode/externalPackages/awt_freqlist.m');
-addpath('/Users/steve/Documents/code/unm/McKenzieLab/utils');
+% addpath('/Users/steve/Documents/code/unm/McKenzieLab/Dat_helpers/sm_MergeDats.m');
+addpath('/Users/steve/Documents/code/unm/McKenzieLab/utils'); % moved above commented imports to this new utils folder
 
-
-% FilePath = 'R:\IHKA_Scharfman\IHKA data';
-FilePath = '/Users/steve/Documents/code/unm/data_mouse';
+FilePath = '/Users/steve/Documents/code/unm/McKenzieLab/data/small_data';
 
 % fileList = dir('/Users/steve/Documents/code/unm/data_mouse/*.edf');
 % disp(fileList.name);
@@ -28,7 +28,7 @@ edf_fils = fils_edf(ismember(b_edf,goodFils));
 
 
 % masterDir = 'E:\data\IHKA';
-masterDir = '/Users/steve/Documents/code/unm/data_mouse/output';
+masterDir = '/Users/steve/Documents/code/unm/McKenzieLab/data/IHKA_output';
 
 fprintf("length fils_edf = %i\n", length(fils_edf));
 
