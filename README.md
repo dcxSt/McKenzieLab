@@ -7,11 +7,14 @@ The code we care about is the `IHKA` folder. The workflow is as follows
 - `sm_MakeAllSeizurePred` runs model(s?) for all times for all files
 
 **Local Utility scripts used**
-Functions from the `/helpers` directory
+- Some functions from the `/helpers` directory
+- Buzcode (1)
 
-**Dependencies**
-Signal Processing Toolbox
-Statistics and Machine Learning Toolbox (required by `zscore`)
+I've moved these local utility scripts to the (newly created) `/IHKA/utils/` folder, and then I only append this `utils` folder to the path, bringing functions from these `.m` files into scope. This forces me to move all the local dependencies into this `utils` folder—and nothing else; so that I can know exactly what is and what isn't being used. 
+
+**Matlab Dependencies**
+- Signal Processing Toolbox
+- Statistics and Machine Learning Toolbox (required by `zscore`)
 
 ## Notes
 
