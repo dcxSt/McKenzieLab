@@ -10,7 +10,7 @@ The code we care about is the `IHKA` folder. The workflow is as follows
 - Some functions from the `/helpers` directory
 - Buzcode (1)
 
-I've moved these local utility scripts to the (newly created) `/IHKA/utils/` folder, and then I only append this `utils` folder to the path, bringing functions from these `.m` files into scope. This forces me to move all the local dependencies into this `utils` folder—and nothing else; so that I can know exactly what is and what isn't being used. 
+I've moved these local utility scripts to the (newly created) `/utils/` folder, and then I only append this `utils` folder to the path, bringing functions from these `.m` files into scope. This forces me to move all the local dependencies into this `utils` folder—and nothing else; so that I can know exactly what is and what isn't being used. 
 
 **Matlab Dependencies**
 - Signal Processing Toolbox
