@@ -76,7 +76,7 @@ if ~exist(dirOut)
 end
 
 %temporary subdirout
-fnameOutb = [dirOut filesep basename filesep ];
+fnameOutb = [dirOut filesep basename filesep ]; % Steve: this naming convention is a bit confusing
 
 if ~exist(fnameOutb)
     mkdir(fnameOutb)

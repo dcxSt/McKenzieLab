@@ -44,6 +44,7 @@ ops.reScalePower = 1000;  % 32767/maxPower < 1,000
 
 
 % frequency bands for coherence
+% freq bands for coherence. must match sm_getPowerPerChannel
 ops.freqs = logspace(log10(.5),log10(200),20);
 
 % frequency selection for phase/amplitude (must match index in getPowerPerChannel)
@@ -97,6 +98,7 @@ edf_fils = fils_edf(ismember(b_edf,goodFils));
 sessions = [];
 
 % find feature files that match annotation file
+% Steve: this code is a bit hard to read... 
 for j = 1:length(ops.FeaturePath)
     d = dir(ops.FeaturePath{j});
     d = {d(cell2mat({d.isdir})).name}';
@@ -192,15 +194,21 @@ for i = 1:nSessions
     
     %loop of time bins
     for k = 1:ops.nBins
-        fprintf("i=%i, k=%i\n", i,k);
-        fprintf("tims{i}=%f\n", tims{i}); % nothing prints here
-        fprintf("%f\n", ops.pct(k));
-        fprintf("%f", tims{i}(:,k:k+1)); % this is where the bug is
+        fprintf("i=%i, k=%i\n", i,k);       % test; prints: i=1 k=1
+        fprintf("tims{i}=%f\n", tims{i});   % test; nothing prints here
+        fprintf("%f\n", ops.pct(k));        % test; 0.050000
+        fprintf("%f", tims{i}(:,k:k+1));    % this is where the bug is
         
         %choose random subset (pct) of samples within each session to train
         %model
         
-        sz{k} = getXPctTim(tims{i}(:,k:k+1), ops.pct(k),1);       
+        sz{k} = getXPctTim(tims{i}(:,k:k+1), ops.pct(k),1); % what is this variable? (sz?)    
+        % for each seizure it's grabbing the moments at the timestamps
+        % the getXPctTim gets ops.pct(k) percent of the time windows before
+        % the seizure
+
+        % last param of getXPctTim is size of windows in seconds
+
         
         %loop over all timepoints for each session for each bin
         for ev = 1:numel(sz{k})
