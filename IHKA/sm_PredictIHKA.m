@@ -5,15 +5,15 @@
 
 % relies on the output of sm_PredictIHKA_getAllFeatures which calculates 
 % and saves the feature file 
-% features are loaded into the variable 'dat' which is is a cell array
+% features are loaded into the variable 'dat' which is a cell array
 % with each element as a category (time bin) to predict
 
 
-
-
-FeatureFileOutput = 'E:\data\IHKA\features.mat';
+% FeatureFileOutput = 'E:\data\IHKA\features.mat';
+FeatureFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/feature/features.mat';
 load(FeatureFileOutput)
-ops.ClassifierFileOutput =  'E:\data\IHKA\classification.mat';
+% ops.ClassifierFileOutput =  'E:\data\IHKA\classification.mat';
+ops.ClassifierFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/feature/classification.mat';
 
 %%
 
@@ -21,7 +21,7 @@ ops.ClassifierFileOutput =  'E:\data\IHKA\classification.mat';
 ops.nGroup  = length(dat);
 training = cell2mat(dat');
 
-%define the groups (1:length(dat))
+% define the groups (1:length(dat))
 group = cell2mat(cellfun(@(a,b) b*ones(size(a,1),1),dat,num2cell(1:length(dat)),'uni',0)');
 
 

@@ -4,7 +4,6 @@ function features = sm_PredictIHKA_calcFeatures(fname,tim,ops)
 % coherence and phase amplitude coupling are cacluted here
 
 
-
 % INPUTs
 %  fname = basename for feature file, one per channel (fname_ch.dat)
 %  tim = time point in seconds
@@ -20,7 +19,7 @@ function features = sm_PredictIHKA_calcFeatures(fname,tim,ops)
 
 %%
 
-%get feature meta data
+% get feature meta data
 
 nCh_featureFile = ops.nCh_featureFile;
 Fs  = ops.Fs;
@@ -40,10 +39,10 @@ rD = nan(ops.durFeat*ops.Fs,nCh_raw);
 for ch = 1:nCh_raw
     powerFil = [fname '_' num2str(ch) '.dat'];
     
-    %load data durFeat(5s) before each relevant start point
+    % load data durFeat(5s) before each relevant start point
     tmp = LoadBinary(powerFil,'nchannels',nCh_featureFile,'frequency',Fs,'channels',1:nCh_featureFile,'duration', durFeat,'start',tim);
     
-    %save mean power (every other channel)
+    % save mean power (every other channel)
     features = [features mean(tmp(:,2:2:40))/reScalePower];
     
     %save time series

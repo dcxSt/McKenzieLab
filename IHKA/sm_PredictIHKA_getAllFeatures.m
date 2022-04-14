@@ -2,6 +2,11 @@
 % sessions. For computational efficacy, features are only calculated for a
 % subset of times, a fixed percentage per seizure for each time bin
 
+% import utility functions
+addpath('/Users/steve/Documents/code/unm/McKenzieLab/utils'); 
+% Steve: will this also bring .m files into the scope of functions called in here
+% Steve: (e.g. in sm_PredictIHKA_calcFeatures, which requires LoadBinary)
+% Steve: The answer is YES! (determined experimentally)
 
 % MakeAll_getPowerPerChannel must have been called on all raw data files to
 % prepare feature files
@@ -9,13 +14,15 @@
 
 % % path where raw data is stored with seizure labels
 % ops.RawDataPath = 'R:\IHKA_Scharfman\IHKA data';  % is this the .dat or the .edf files?
-% ops.FeaturePath = {'F:\data1\IHKA','E:\data\IHKA'};     % why are there two paths here?
+% ops.FeaturePath = {'F:\data1\IHKA','E:\data\IHKA'};     % why are there
+% two paths here? (because too much data) 
+% FeaturePath is where all the features and .dat files are stored
 % ops.FeatureFileOutput = 'E:\data\IHKA\features.mat';    % where to store the features
 
-ops.RawDataPath = '/Users/steve/Documents/code/unm/McKenzieLab/data/small_data'; % best guess...
-ops.FeaturePath = {'/Users/steve/Documents/code/unm/McKenzieLab/data/IHKA_output'}; % this is what 
+ops.RawDataPath = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/raw'; % best guess...
+ops.FeaturePath = {'/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/feature'}; % this is what 
 % we replaced E:\data\IHKA with in sm_getPowerPerChannel.m (there it was called 'masterDir')
-ops.FeatureFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/IHKA_output/features.mat';
+ops.FeatureFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/feature/features.mat';
 
 % define time windows around to predict (s)
 
@@ -73,6 +80,7 @@ ops.features = @sm_PredictIHKA_calcFeatures;
 %DEPENDENCIES
 % getAllExtFiles, sm_PredictIHKA_calcFeatures,sm_getPowerPerChannel,sm_MakeAll_getPowerPerChannel,
 % getXPctTim, circ_corrcl
+% Steve: circ_corrcl is used in sm_PredictIHKA_calcFeatures.m
 
 %%
 
@@ -99,7 +107,7 @@ sessions = [];
 
 % find feature files that match annotation file
 % Steve: this code is a bit hard to read... 
-for j = 1:length(ops.FeaturePath)
+for j = 1:length(ops.FeaturePath)           % cause large data volumes, .dat data was stored in multiple (two) places
     d = dir(ops.FeaturePath{j});
     d = {d(cell2mat({d.isdir})).name}';
     [a,b] = fileparts(seizure_fils);
@@ -189,8 +197,8 @@ end
 
 
 %loop over number of sessions
-for i = 1:nSessions
-    fname = sessions{i,2};
+for i = 1:nSessions                         % just one session for test
+    fname = sessions{i,2};                  % path + base of fname of the four channels .dat files
     
     %loop of time bins
     for k = 1:ops.nBins
@@ -219,37 +227,30 @@ for i = 1:nSessions
             dur = s.bytes/ops.nCh_featureFile/ops.Fs/2;
             
             tim = sz{k}(ev)-ops.durFeat;
-            %make sure the even does not exceed duration of recording
+            %make sure the event does not exceed duration of recording
             if ~isnan(tim) && (dur-tim)>ops.durFeat
                 
                 try
-                %get features (some pre calculated, some calculated on the fly)
-                features = ops.features(fname,tim,ops);
-                
-                
-                %save all features for each time bin
-                dat{k} = [dat{k};features];
-                
-                %keep track of which session matches which feature
-                sesID{k} = [sesID{k}; i tim];
+                    %get features (some pre calculated, some calculated on the fly)
+                    features = ops.features(fname,tim,ops);
+                    
+                    %save all features for each time bin
+                    dat{k} = [dat{k};features];
+                    
+                    %keep track of which session matches which feature
+                    sesID{k} = [sesID{k}; i tim];
+                    fprintf("\nHurray %d", ev)
+                    %disp(features);
                 catch
                     disp(fname)
                     disp(['file length: ' num2str(dur) ' time of read:' num2str(tim)])
-                    
-                    
-                end
-                
+                end 
             end
-            
-           
         end
-        
-        
-        
     end
     
      %save the full feature space
-        save(ops.FeatureFileOutput,'dat','sesID','sessions','ops','-v7.3')
+     save(ops.FeatureFileOutput,'dat','sesID','sessions','ops','-v7.3')
 end
 
 
