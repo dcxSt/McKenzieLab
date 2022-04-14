@@ -5,7 +5,7 @@
 % addpath('/Users/steve/Documents/code/unm/McKenzieLab/Dat_helpers/sm_MergeDats.m');
 addpath('/Users/steve/Documents/code/unm/McKenzieLab/utils'); % moved above commented imports to this new utils folder
 
-FilePath = '/Users/steve/Documents/code/unm/McKenzieLab/data/small_data';
+FilePath = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/raw';
 
 % fileList = dir('/Users/steve/Documents/code/unm/data_mouse/*.edf');
 % disp(fileList.name);
@@ -38,8 +38,8 @@ fprintf("length fils_edf = %i\n", length(fils_edf));
 % check if file exists
 f_edf = fils_edf{1};  % just pick the one
 
-for j = 1:4
-    fprintf("Running sm_getPowerPerChannel for channel %i\n", j);
+for j = 1:4 % iterate through each channel
+    fprintf("\nRunning sm_getPowerPerChannel for channel %i\n", j);
     sm_getPowerPerChannel(f_edf,j)
 end
 
