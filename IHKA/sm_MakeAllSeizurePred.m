@@ -6,15 +6,20 @@
 %
 % see: sm_MakeAll_getPowerPerChannel,sm_PredictIHKA_getAllFeatures , sm_PredictIHKA
 
-
+addpath('/Users/steve/Documents/code/unm/McKenzieLab/utils/')
 
 %%
 %load classifier, loads 'ops','rusTree','sessions'
-ClassifierFileOutput =  'E:\data\IHKA\classification.mat';
+
+% ClassifierFileOutput =  'E:\data\IHKA\classification.mat';
+ClassifierFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/feature/classification.mat';
 load(ClassifierFileOutput)
 
-FeatureFileOutput = 'E:\data\IHKA\features.mat';
+% FeatureFileOutput = 'E:\data\IHKA\features.mat';
+FeatureFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/feature/features.mat';
 load(FeatureFileOutput,'sesID')
+
+% PredictFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24_data/feature/predict.mat';
 
 %%
 
@@ -35,15 +40,15 @@ end
 
 %%
 close all
-figure
-k = gaussian2Dfilter([1 100],[ 1 50]);
-%estimateLabel1 = estimateLabel;
-%estimateLabel1(inTrainingSet) = nan;
-for i = 1:6
-    subplot(6,1,i)
-   
-    hold on
-    plot([seizure_start seizure_start],[0 1],'--','color','r')
-     plot(nanconvn(estimateLabel==i,k'),'k')
-end
+% figure
+% % k = gaussian2Dfilter([1 100],[ 1 50]); % can't find gaussian2Dfilter
+% %estimateLabel1 = estimateLabel;
+% %estimateLabel1(inTrainingSet) = nan;
+% for i = 1:6
+%     subplot(6,1,i)
+%    
+%     hold on
+%     plot([seizure_start seizure_start],[0 1],'--','color','r')
+% %     plot(nanconvn(estimateLabel==i,k'),'k')
+% end
     
