@@ -45,7 +45,7 @@ ops.nBins = length(ops.pct);
 ops.timPost = 600;
 
 % info for full feature space
-ops.Fs  = 2000; % sampling rate of edf files
+ops.Fs  = 2000; % sampling rate is 2000 Hz
 ops.reScalePhase = 1000;  %
 ops.reScalePower = 1000;  % 32767/maxPower < 1,000
 
@@ -107,15 +107,21 @@ sessions = [];
 
 % find feature files that match annotation file
 % Steve: this code is a bit hard to read... 
+%
+% The following code produces `sessions` which is a list of tuples (x,y)
+% where x is the path/to/24_hour_data.txt
+% and   y is the path/to/directory/of/24_hour_data_dat_file
+% (y doesn't have the extension)
+%
 for j = 1:length(ops.FeaturePath)           % cause large data volumes, .dat data was stored in multiple (two) places
-    d = dir(ops.FeaturePath{j});
-    d = {d(cell2mat({d.isdir})).name}';
-    [a,b] = fileparts(seizure_fils);
-    seizure_fils_txt = regexprep(b,' ','_');
-    [~,b] = ismember(seizure_fils_txt,d);
-    kp = b>0;
-    b(~kp) =[];
-    seizure_filst = seizure_fils(kp);
+    d = dir(ops.FeaturePath{j});            % d is a directory object, directory with sessions (i.e. 24h .dat files)
+    d = {d(cell2mat({d.isdir})).name}';     % not sure... probably don't need to exactly understand this
+    [a,b] = fileparts(seizure_fils);        % fileparts returns [path,name,extension]
+    seizure_fils_txt = regexprep(b,' ','_');% probably some matlab convention for filename string comparison
+    [~,b] = ismember(seizure_fils_txt,d);   % check if the seizure file 
+    kp = b>0;                               % kp is a bool, true if ismember
+    b(~kp) =[];                             % not sure...
+    seizure_filst = seizure_fils(kp);       % 
     
     
     % save list of file names for the paired annotation/feature files
