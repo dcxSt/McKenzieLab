@@ -44,7 +44,7 @@ def update_asset_links(html): # takes html as list f.readllines()
             print(f"leaf={leaf}")
             # copy paste that image into this assets file
             shutil.copyfile(localpath , os.path.join("./assets/" , leaf))
-            onlinestem = "https://github.com/dcxSt/mckenzielab/tree/gh-pages/assets/"
+            onlinestem = "https://raw.githubusercontent.com/dcxSt/McKenzieLab/gh-pages/assets/"
             onlinepath = os.path.join(onlinestem,leaf)
             print(f"copy pasted asset into {os.path.join('./assets/' , leaf)}")
 
