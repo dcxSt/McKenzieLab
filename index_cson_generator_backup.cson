@@ -1,5 +1,5 @@
 createdAt: "2022-04-19T14:21:59.567Z"
-updatedAt: "2022-04-21T13:29:15.981Z"
+updatedAt: "2022-04-21T14:23:20.496Z"
 type: "MARKDOWN_NOTE"
 folder: "36748f63b14206359257"
 title: "McKenzieLab Repository, Matlab code"
@@ -138,22 +138,6 @@ content: '''
   }
   </style>
   
-  ### Mermaid
-  You might want to use a mermaid flowchart. May be un-necessary... we'll see. 
-  
-  ```mermaid
-  sequenceDiagram
-      participant Alice
-      participant Bob
-      Alice->John: Hello John, how are you?
-      loop Healthcheck
-          John->John: Fight against hypochondria
-      end
-      Note right of John: Rational thoughts <br/>prevail...
-      John-->Alice: Great!
-      John->Bob: How about you?
-      Bob-->John: Jolly good!
-  ```
 '''
 linesHighlighted: []
 isStarred: false

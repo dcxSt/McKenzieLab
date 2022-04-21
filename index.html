@@ -1353,22 +1353,8 @@ body p {
 <link rel="stylesheet" href="css/katex.min.css">
 <link rel="stylesheet" href="css/codemirror.css">
 <link rel="stylesheet" href="css/main.min.css">
-  <script src="js/lodash.min.js"></script><script src="js/mermaid.min.js"></script>
-  <script>
-function displayMermaids() {
-  _.forEach(
-    document.querySelectorAll('.mermaid'),
-    el => {
-      const height = el.attributes.getNamedItem('data-height')
-      if (height && height.value !== 'undefined') {
-        el.style.height = height.value + 'vh'
-      }
-    }
-  )
-}
-
-document.addEventListener('DOMContentLoaded', displayMermaids);
-</script>
+  
+  <script></script>
 </head>
 <body data-theme="white">
 <h1 id="McKenzieLab-Repository-Matlab-code" data-line="0">McKenzieLab Repository, Matlab code</h1>
@@ -1521,22 +1507,6 @@ var {
   color:pink;
 }
 </style>
-<h3 id="Mermaid" data-line="131">Mermaid</h3>
-<p data-line="132">You might want to use a mermaid flowchart. May be un-necessary… we’ll see.</p>
-<pre class="fence" data-line="134">
-            <span class="filename"></span>
-            <div class="mermaid" data-height="undefined">sequenceDiagram
-    participant Alice
-    participant Bob
-    Alice->John: Hello John, how are you?
-    loop Healthcheck
-        John->John: Fight against hypochondria
-    end
-    Note right of John: Rational thoughts <br/>prevail...
-    John-->Alice: Great!
-    John->Bob: How about you?
-    Bob-->John: Jolly good!
-</div>
-          </pre>
+
 </body>
 </html>
