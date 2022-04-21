@@ -1,5 +1,5 @@
 createdAt: "2022-04-19T14:21:59.567Z"
-updatedAt: "2022-04-21T14:23:20.496Z"
+updatedAt: "2022-04-21T14:48:32.941Z"
 type: "MARKDOWN_NOTE"
 folder: "36748f63b14206359257"
 title: "McKenzieLab Repository, Matlab code"
@@ -19,6 +19,7 @@ content: '''
   <heldep>helpers dependency</heldep>
   <buzdep>buzzcode dependency</buzdep>
   <smdep>"sm" / core IHKA pipeline file</smdep>
+  <var>variable</var>
   
   ## Pseudocode of IHKA pipeline as is
   
@@ -85,7 +86,7 @@ content: '''
   
   ---
   
-  ## Discussion
+  # Discussion
   
   The data, every step of the way is
   - raw `.edf` files (~1.3G for a 24h recording) (question how quantized is this original signal? Probably i32 or i64)
@@ -100,13 +101,33 @@ content: '''
   
   I think this codebase is going to be much more concise and easier to read in Python because we won't have to worry about indices anymore—which are among the major culprits of confusion. However, this shift will require some thinking before implementation since it may require us to make some adjustments to how we store data... especially the .dat indexing scheme. 
   
-  ### Questions 
-  After running `sm_MakeAll_getPowerPerChannel.m`—Is the original time-series preserved (as a channel) in the `.dat` files, or is it only the wavelet power filter bank? 
+  ### Cloud Compute
+  
+  In the below diagram, I think we fall into Virtual Machines (Build new $\\to$ Require full control $\\to$ VM), that we can build new. Yes, we will need to migrate a database, but I think we can treat the database as if it were new (am I correct in assuming this? $\\to$ ask SM)
+  
+  ![Azure Compute Choices](/Users/steve/boostnote/pics/unm/compute-choices-azure.png)
+  
+  ### Core Questions
+  - How does the cloud computing & storage payment system work?
+    - Is it tokens? How do tokens work? So far my best guess is that you pay some monthly rate for storage, and then you pay for the computing with a tokens system per in units of *cores* $\\times$ *hours* consumed.
   
   
+  ### Other Questions 
+  - After running `sm_MakeAll_getPowerPerChannel.m`—Is the original time-series preserved (as a channel) in the `.dat` files, or is it only the wavelet power filter bank? 
+  - Is there any reason why we might want a different database type (e.g. SQL)? My sense is probably not. But need to look into this!
+  - What should the process be for adding data to the database? Is this a first-class citizen (i.e. do we want to make this as simple as possible?)
+  - Is there a plan to build an API for this database? So that "users" (general public) can run their own Featurizing + ML models?
   
-  ---
   
+  ### Todo
+  Learn about: 
+  - [ ] Docker, 
+  - [ ] Kubernetes
+  
+  
+  <br/><br/><br/><br/><br/>
+  <br/><br/><br/><br/><br/>
+  <br/><br/><br/><br/><br/>
   
   <style>
   fold {

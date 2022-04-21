@@ -1366,118 +1366,143 @@ body p {
 <mldep>MatLab dep</mldep><br />
 <heldep>helpers dependency</heldep><br />
 <buzdep>buzzcode dependency</buzdep><br />
-<smdep>&quot;sm&quot; / core IHKA pipeline file</smdep></p>
-<h2 id="Pseudocode-of-IHKA-pipeline-as-is" data-line="13">Pseudocode of IHKA pipeline as is</h2>
-<p data-line="15"><smdep>sm_MakeAll_getPowerPerChannel</smdep> calculates features to save to disk as .dat file.</p>
+<smdep>&quot;sm&quot; / core IHKA pipeline file</smdep><br />
+<var>variable</var></p>
+<h2 id="Pseudocode-of-IHKA-pipeline-as-is" data-line="14">Pseudocode of IHKA pipeline as is</h2>
+<p data-line="16"><smdep>sm_MakeAll_getPowerPerChannel</smdep> calculates features to save to disk as .dat file.</p>
 <ul>
-<li data-line="16">Finds all <file>raw.edf</file> and <file>raw.txt</file> pairs inside of <fold>raw_data</fold></li>
-<li data-line="17">For each (<file>patient_xyz_raw.txt</file>, <file>patient_xyz_raw.edf</file>) filepair, calls <smdep>sm_getPowerPerChannel</smdep> on each channel
+<li data-line="17">Finds all <file>raw.edf</file> and <file>raw.txt</file> pairs inside of <fold>raw_data</fold></li>
+<li data-line="18">For each (<file>patient_xyz_raw.txt</file>, <file>patient_xyz_raw.edf</file>) filepair, calls <smdep>sm_getPowerPerChannel</smdep> on each channel
 <ul>
-<li data-line="18">args: takes filename <file>patient_xyz_raw.edf</file>, channel number (e.g. 3), and <var>varargin</var> (optional args)</li>
-<li data-line="19">computes wavelet decomp for 20 freqs, Power (/Amplitude) and Phase</li>
-<li data-line="20">saves 40 (=2x20) intermediate files in a temporary cache</li>
-<li data-line="21">calls <heldep>sm_MergDats<heldep></li>
-<li data-line="22">combines intermediate files and saves as <file>patient_xyz.dat</file></li>
+<li data-line="19">args: takes filename <file>patient_xyz_raw.edf</file>, channel number (e.g. 3), and <var>varargin</var> (optional args)</li>
+<li data-line="20">computes wavelet decomp for 20 freqs, Power (/Amplitude) and Phase</li>
+<li data-line="21">saves 40 (=2x20) intermediate files in a temporary cache</li>
+<li data-line="22">calls <heldep>sm_MergDats<heldep></li>
+<li data-line="23">combines intermediate files and saves as <file>patient_xyz.dat</file></li>
 </ul>
 </li>
 </ul>
-<p data-line="24"><smdep>sm_PredictIHKA_getAllFeatures</smdep></p>
+<p data-line="25"><smdep>sm_PredictIHKA_getAllFeatures</smdep></p>
 <ul>
-<li data-line="25">reads from <fold>raw/data/path</fold> only for <file>patient_xyz_raw.txt</file> files, and from <fold>wavelet/power/path</fold> for <file>patient_xyz.dat</file></li>
-<li data-line="26"><var>ops.bins, ops.pct</var> defines prediction time bins and % of samples to chose from these bins in training resp.</li>
-<li data-line="27"><var>sessions</var> stores list of tuples (<file>patient_xyz.txt , patient_xyz.dat</file>)</li>
-<li data-line="28"><var>tims</var> empty list of matrices, <var>tims{i}</var> <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi><mo>×</mo></mrow><annotation encoding="application/x-tex">N\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="mord">×</span></span></span></span><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>M</mi></mrow><annotation encoding="application/x-tex">M</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span></span></span></span> where <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">N</span></span></span></span> is the number of seizures in the <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span>'th componant and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>M</mi></mrow><annotation encoding="application/x-tex">M</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span></span></span></span> is the number of bins + 2 (one extra for the intraictal timestamp, one for postictal timestamp)</li>
-<li data-line="29">loop: for each session
+<li data-line="26">reads from <fold>raw/data/path</fold> only for <file>patient_xyz_raw.txt</file> files, and from <fold>wavelet/power/path</fold> for <file>patient_xyz.dat</file></li>
+<li data-line="27"><var>ops.bins, ops.pct</var> defines prediction time bins and % of samples to chose from these bins in training resp.</li>
+<li data-line="28"><var>sessions</var> stores list of tuples (<file>patient_xyz.txt , patient_xyz.dat</file>)</li>
+<li data-line="29"><var>tims</var> empty list of matrices, <var>tims{i}</var> <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi><mo>×</mo></mrow><annotation encoding="application/x-tex">N\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="mord">×</span></span></span></span><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>M</mi></mrow><annotation encoding="application/x-tex">M</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span></span></span></span> where <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">N</span></span></span></span> is the number of seizures in the <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span>'th componant and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>M</mi></mrow><annotation encoding="application/x-tex">M</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span></span></span></span> is the number of bins + 2 (one extra for the intraictal timestamp, one for postictal timestamp)</li>
+<li data-line="30">loop: for each session
 <ul>
-<li data-line="30">for each preictal time bin
+<li data-line="31">for each preictal time bin
 <ul>
-<li data-line="31">call <buzdep>getXPctTim</buzdep> to sample timestamps</li>
-<li data-line="32">for each timestamp
+<li data-line="32">call <buzdep>getXPctTim</buzdep> to sample timestamps</li>
+<li data-line="33">for each timestamp
 <ul>
-<li data-line="33">compute the features with <smdep>sm_PredictIHKA_calcFeatures<smdep></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li data-line="34">outputs a features matrix <file>features.mat</file> with ‘save’—a MatLab function (saves specified workspace variables)</li>
-</ul>
-<p data-line="36">[from above] <smdep>sm_PredictIHKA_calcFeatures</smdep> (it’s a function)</p>
-<ul>
-<li data-line="37">takes: <var>fname</var> is the path to the feature file, <var>tim</var> is <var>tims{i}</var> from earlier, <var>ops</var> is a struct with all other options and metadata.</li>
-<li data-line="38">for each channel
-<ul>
-<li data-line="39">use <buzdep>LoadBinary</buzdep> to load a <var>ops.durFeat</var> (5 second) long time segment of each freq channel before the starting times specified by <var>tim</var></li>
-<li data-line="40">save the <var>features</var>
-<ul>
-<li data-line="41">mean power</li>
-<li data-line="42">whole time series in window?? (5 x 2000 dta points)</li>
-<li data-line="43">phase-amplitude correlation</li>
-<li data-line="44">coherence between every pair of features (n(n-1)/2 = 6)</li>
+<li data-line="34">compute the features with <smdep>sm_PredictIHKA_calcFeatures<smdep></li>
 </ul>
 </li>
 </ul>
 </li>
-<li data-line="45">returns <var>features</var></li>
-</ul>
-<p data-line="47"><smdep>sm_PredictIHKA</smdep></p>
-<ul>
-<li data-line="48">loads a feature file to train the RUSboost model to predict which time bin the data originated from relative to the nearest seizure</li>
-<li data-line="49">loads features from <file>features.mat</file></li>
-<li data-line="50">train/val/test - split</li>
-<li data-line="51">serializes model to <file>classification.mat</file></li>
-</ul>
-<p data-line="53"><smdep>sm_makeAllSeizurePred</smdep></p>
-<ul>
-<li data-line="54">this function takes a trained model with accompanying feature definition and calculates the predicted time to seizure. pulls data from both the raw time series, and the pre-calculated feature space</li>
-<li data-line="55">loads model <file>classification.mat</file> and features <file>features.mat</file></li>
-<li data-line="56">loop over all sessions
-<ul>
-<li data-line="57">call <smdep>sm_getSeizurePred</smdep>
-<ul>
-<li data-line="58">this function takes the classifier in rusTree and applies the feature space specified in ops and classified ever moment in time for the file (fname)</li>
-<li data-line="59"></li>
 </ul>
 </li>
-<li data-line="60">save predictions <file>predict.mat</file></li>
+<li data-line="35">outputs a features matrix <file>features.mat</file> with ‘save’—a MatLab function (saves specified workspace variables)</li>
+</ul>
+<p data-line="37">[from above] <smdep>sm_PredictIHKA_calcFeatures</smdep> (it’s a function)</p>
+<ul>
+<li data-line="38">takes: <var>fname</var> is the path to the feature file, <var>tim</var> is <var>tims{i}</var> from earlier, <var>ops</var> is a struct with all other options and metadata.</li>
+<li data-line="39">for each channel
+<ul>
+<li data-line="40">use <buzdep>LoadBinary</buzdep> to load a <var>ops.durFeat</var> (5 second) long time segment of each freq channel before the starting times specified by <var>tim</var></li>
+<li data-line="41">save the <var>features</var>
+<ul>
+<li data-line="42">mean power</li>
+<li data-line="43">whole time series in window?? (5 x 2000 dta points)</li>
+<li data-line="44">phase-amplitude correlation</li>
+<li data-line="45">coherence between every pair of features (n(n-1)/2 = 6)</li>
 </ul>
 </li>
 </ul>
-<h2 id="What-are-all-the-ops" data-line="63">What are all the <code>ops</code>?</h2>
-<p data-line="64"><strong>Hyper parameters</strong></p>
-<ul>
-<li data-line="65"><strong>durFeat</strong> Window length in seconds</li>
-<li data-line="66"><strong>bins</strong> the prediction time bins</li>
+</li>
+<li data-line="46">returns <var>features</var></li>
 </ul>
-<p data-line="68"><strong>Data parameters</strong></p>
+<p data-line="48"><smdep>sm_PredictIHKA</smdep></p>
 <ul>
-<li data-line="69"><strong>Fs</strong> Sample rate, in Hz</li>
+<li data-line="49">loads a feature file to train the RUSboost model to predict which time bin the data originated from relative to the nearest seizure</li>
+<li data-line="50">loads features from <file>features.mat</file></li>
+<li data-line="51">train/val/test - split</li>
+<li data-line="52">serializes model to <file>classification.mat</file></li>
 </ul>
-<p data-line="73"><strong>Misc</strong></p>
+<p data-line="54"><smdep>sm_makeAllSeizurePred</smdep></p>
 <ul>
-<li data-line="74"><strong>nCh_featureFile</strong> is this the number of frequency channels in the wavelet transform (-&gt; hyper param) or the number of electrode channels (-&gt; data param)?</li>
+<li data-line="55">this function takes a trained model with accompanying feature definition and calculates the predicted time to seizure. pulls data from both the raw time series, and the pre-calculated feature space</li>
+<li data-line="56">loads model <file>classification.mat</file> and features <file>features.mat</file></li>
+<li data-line="57">loop over all sessions
+<ul>
+<li data-line="58">call <smdep>sm_getSeizurePred</smdep>
+<ul>
+<li data-line="59">this function takes the classifier in rusTree and applies the feature space specified in ops and classified ever moment in time for the file (fname)</li>
+<li data-line="60"></li>
+</ul>
+</li>
+<li data-line="61">save predictions <file>predict.mat</file></li>
+</ul>
+</li>
+</ul>
+<h2 id="What-are-all-the-ops" data-line="64">What are all the <code>ops</code>?</h2>
+<p data-line="65"><strong>Hyper parameters</strong></p>
+<ul>
+<li data-line="66"><strong>durFeat</strong> Window length in seconds</li>
+<li data-line="67"><strong>bins</strong> the prediction time bins</li>
+</ul>
+<p data-line="69"><strong>Data parameters</strong></p>
+<ul>
+<li data-line="70"><strong>Fs</strong> Sample rate, in Hz</li>
+</ul>
+<p data-line="74"><strong>Misc</strong></p>
+<ul>
+<li data-line="75"><strong>nCh_featureFile</strong> is this the number of frequency channels in the wavelet transform (-&gt; hyper param) or the number of electrode channels (-&gt; data param)?</li>
 </ul>
 <hr />
-<h2 id="Discussion" data-line="78">Discussion</h2>
-<p data-line="80">The data, every step of the way is</p>
+<h1 id="Discussion" data-line="79">Discussion</h1>
+<p data-line="81">The data, every step of the way is</p>
 <ul>
-<li data-line="81">raw <code>.edf</code> files (~1.3G for a 24h recording) (question how quantized is this original signal? Probably i32 or i64)</li>
-<li data-line="82"><code>.dat</code> (~13G) files which contain 16bit quantization of
+<li data-line="82">raw <code>.edf</code> files (~1.3G for a 24h recording) (question how quantized is this original signal? Probably i32 or i64)</li>
+<li data-line="83"><code>.dat</code> (~13G) files which contain 16bit quantization of
 <ul>
-<li data-line="83">raw x1</li>
-<li data-line="84">wavelet conv phase x20</li>
-<li data-line="85">wavelet conv power x20</li>
+<li data-line="84">raw x1</li>
+<li data-line="85">wavelet conv phase x20</li>
+<li data-line="86">wavelet conv power x20</li>
 </ul>
 </li>
-<li data-line="86"><code>feature.mat</code> files with features (~7.3M)</li>
-<li data-line="87"><code>model</code> a trained model (aka <code>classification.mat</code>) (~21M), shared over many seizures</li>
-<li data-line="88"><code>predict.mat</code> predictions (…?)</li>
+<li data-line="87"><code>feature.mat</code> files with features (~7.3M)</li>
+<li data-line="88"><code>model</code> a trained model (aka <code>classification.mat</code>) (~21M), shared over many seizures</li>
+<li data-line="89"><code>predict.mat</code> predictions (…?)</li>
 </ul>
-<p data-line="91">I think this codebase is going to be much more concise and easier to read in Python because we won’t have to worry about indices anymore—which are among the major culprits of confusion. However, this shift will require some thinking before implementation since it may require us to make some adjustments to how we store data… especially the .dat indexing scheme.</p>
-<h3 id="Questions" data-line="93">Questions</h3>
-<p data-line="94">After running <code>sm_MakeAll_getPowerPerChannel.m</code>—Is the original time-series preserved (as a channel) in the <code>.dat</code> files, or is it only the wavelet power filter bank?</p>
-<hr />
+<p data-line="92">I think this codebase is going to be much more concise and easier to read in Python because we won’t have to worry about indices anymore—which are among the major culprits of confusion. However, this shift will require some thinking before implementation since it may require us to make some adjustments to how we store data… especially the .dat indexing scheme.</p>
+<h3 id="Cloud-Compute" data-line="94">Cloud Compute</h3>
+<p data-line="96">In the below diagram, I think we fall into Virtual Machines (Build new <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> Require full control <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> VM), that we can build new. Yes, we will need to migrate a database, but I think we can treat the database as if it were new (am I correct in assuming this? <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> ask SM)</p>
+<p data-line="98"><img src="/Users/steve/boostnote/pics/unm/compute-choices-azure.png" alt="Azure Compute Choices" /></p>
+<h3 id="Core-Questions" data-line="100">Core Questions</h3>
+<ul>
+<li data-line="101">How does the cloud computing &amp; storage payment system work?
+<ul>
+<li data-line="102">Is it tokens? How do tokens work? So far my best guess is that you pay some monthly rate for storage, and then you pay for the computing with a tokens system per in units of <em>cores</em> <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> <em>hours</em> consumed.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Other-Questions" data-line="105">Other Questions</h3>
+<ul>
+<li data-line="106">After running <code>sm_MakeAll_getPowerPerChannel.m</code>—Is the original time-series preserved (as a channel) in the <code>.dat</code> files, or is it only the wavelet power filter bank?</li>
+<li data-line="107">Is there any reason why we might want a different database type (e.g. SQL)? My sense is probably not. But need to look into this!</li>
+<li data-line="108">What should the process be for adding data to the database? Is this a first-class citizen (i.e. do we want to make this as simple as possible?)</li>
+<li data-line="109">Is there a plan to build an API for this database? So that “users” (general public) can run their own Featurizing + ML models?</li>
+</ul>
+<h3 id="Todo" data-line="112">Todo</h3>
+<p data-line="113">Learn about:</p>
+<ul>
+<li class="taskListItem" data-line="114"><label class='taskListItem' for='checkbox-115'><input type='checkbox' id='checkbox-115'/> Docker,</label></li>
+<li class="taskListItem" data-line="115"><label class='taskListItem' for='checkbox-116'><input type='checkbox' id='checkbox-116'/> Kubernetes</label></li>
+</ul>
+<p data-line="118"><br/><br/><br/><br/><br/><br />
+<br/><br/><br/><br/><br/><br />
+<br/><br/><br/><br/><br/></p>
 <style>
 fold {
   color:green; // i/o stuff
