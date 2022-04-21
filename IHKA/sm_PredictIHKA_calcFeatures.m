@@ -33,8 +33,8 @@ ph_idx = ops.ph_idx;
 
 %%
 
-%loop over channels
-features =[];
+% loop over channels
+features =[]; % this is where the features variable is declared
 rD = nan(ops.durFeat*ops.Fs,nCh_raw);
 for ch = 1:nCh_raw
     powerFil = [fname '_' num2str(ch) '.dat'];
@@ -45,11 +45,11 @@ for ch = 1:nCh_raw
     % save mean power (every other channel)
     features = [features mean(tmp(:,2:2:40))/reScalePower];
     
-    %save time series
+    % save time series
     rD(:,ch) = tmp(:,1);
     
     
-    %calculate phase/amplitude correlation in time window
+    % calculate phase/amplitude correlation in time window
     
     if ch==ch_phaseAmp
         comod = nan(length(amp_idx),length(ph_idx));

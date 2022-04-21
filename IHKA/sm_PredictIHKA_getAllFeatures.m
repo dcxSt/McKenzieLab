@@ -136,19 +136,20 @@ nSessions = size(sessions,1);
 %%
 
 warning off
-%get all relevant timepoints around the seizure start and end
+
+% Get all relevant timepoints around the seizure start and end
 
 % TS name in file.
 TSname1 = 'Seizure starts';
 TSname2 = 'ends';
 
 
-% loop over all seizures
+% loop over all seizures (i.e. "good" 24h recording sessions)
 for i= 1:size(sessions,1)
     
     % tims{i} = [NxM] , N = seizure number, M = timestamp for bin of interest length(bins)+2
-    % Steve: hmm, it seems that the code becomes buggy if there are no
-    % seizures... so we need a sample with seizures... 
+    % Steve: hmm, it seems that the code doesn't run if there are no
+    %        seizures... so we need a sample with seizures 
     tims{i} = [];
     
     
@@ -237,13 +238,13 @@ for i = 1:nSessions                         % just one session for test
             if ~isnan(tim) && (dur-tim)>ops.durFeat
                 
                 try
-                    %get features (some pre calculated, some calculated on the fly)
+                    % get features (some pre calculated, some calculated on the fly)
                     features = ops.features(fname,tim,ops);
                     
-                    %save all features for each time bin
+                    % save all features for each time bin
                     dat{k} = [dat{k};features];
                     
-                    %keep track of which session matches which feature
+                    % keep track of which session matches which feature
                     sesID{k} = [sesID{k}; i tim];
                     fprintf("\nHurray %d", ev)
                     %disp(features);

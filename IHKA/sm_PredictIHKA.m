@@ -36,7 +36,7 @@ group = group(ops.rix);
 
 ops.N = round(size(training,1)/2);         % Number of observations in the training sample
 ops.t = templateTree('MaxNumSplits',ops.N);
-ops.NumLearningCycles = 500;
+ops.NumLearningCycles = 50; % Steve: previous value was 500
 ops.Learners = ops.t;
 ops.LearnRate = 0.1;
 ops.Method = 'RUSBoost';

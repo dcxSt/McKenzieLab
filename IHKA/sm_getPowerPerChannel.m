@@ -99,7 +99,7 @@ end
 %%
 
 %read data
-fprintf("\nReading .edf data file %s" , filename);
+fprintf("\nReading .edf data file %s" , filename); % this takes a while 
 data = edfread(filename);
 
 ch = data{:,channel};
@@ -134,13 +134,13 @@ for i = 1:length(freqs)
     fnameOut2OnlyFile = splitstr{length(splitstr)};
 
     % if the files have already been computed, there's no need to
-    % re-compute them
+    % re-compute them (steve mac, was taking long time for everything to come together)
     if ~ismember(fnameOut1OnlyFile , lsdir_fnameOutb) || ~ismember(fnameOut2OnlyFile , lsdir_fnameOutb)
         fprintf("\nComputing wavelet filter (convolution) for f=%d",freqs(i));                          
         % wavelet decomposition
         signal_filtered = awt_freqlist(ch,Fs,freqs(i));
             
-        if ismember('waveletPower',features) % add condition here, only run if the temporary file has not already been created
+        if ismember('waveletPower',features) 
             
             % temp file for power
             % fnameOut1 = [fnameOutb basename '_A' num2str(i_out) '.dat'];
@@ -167,7 +167,7 @@ for i = 1:length(freqs)
         end
         
         
-        if ismember('waveletPhase',features) % add condition here, only run if the temporary file has not already been created
+        if ismember('waveletPhase',features) 
             
             %temp file for phase
             % fnameOut2 = [fnameOutb basename '_P' num2str(i_out) '.dat']; 
@@ -192,7 +192,7 @@ for i = 1:length(freqs)
         disp(fnameOut1);
         disp("and");
         disp(fnameOut2);
-        disp("Files already exist, no need to compute wavelet decomp.");
+        disp("Files already exist, no need to compute wavelet convolution.");
     end
 
     featureList_t = [];

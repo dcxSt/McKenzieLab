@@ -29,7 +29,7 @@ dur = s.bytes/nCh_featureFil/Fs/2;
 
 
 
-ts = 0: (dur-ops.durFeat);
+ts = 0:(dur-ops.durFeat);
 time2seizure = ts;
 kp = true(size(ts));
 for i = 1:length(seizure_start)
