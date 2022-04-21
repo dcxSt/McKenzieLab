@@ -1,0 +1,160 @@
+createdAt: "2022-04-19T14:21:59.567Z"
+updatedAt: "2022-04-21T13:29:15.981Z"
+type: "MARKDOWN_NOTE"
+folder: "36748f63b14206359257"
+title: "McKenzieLab Repository, Matlab code"
+tags: [
+  "mckenzielab-gh-pages"
+]
+content: '''
+  # McKenzieLab Repository, Matlab code
+  4/19/2022, 3:22:08 PM
+  
+  This document attempts to provide the most-concise-as-possible outline of the codebase that would enable someone to re-write it from scratch. 
+  
+  **Color Scheme**
+  <fold>directory ("folder")</fold>
+  <file>file</file>
+  <mldep>MatLab dep</mldep>
+  <heldep>helpers dependency</heldep>
+  <buzdep>buzzcode dependency</buzdep>
+  <smdep>"sm" / core IHKA pipeline file</smdep>
+  
+  ## Pseudocode of IHKA pipeline as is
+  
+  <smdep>sm_MakeAll_getPowerPerChannel</smdep> calculates features to save to disk as .dat file. 
+  - Finds all <file>raw.edf</file> and <file>raw.txt</file> pairs inside of <fold>raw_data</fold>
+  - For each (<file>patient_xyz_raw.txt</file>, <file>patient_xyz_raw.edf</file>) filepair, calls <smdep>sm_getPowerPerChannel</smdep> on each channel
+    - args: takes filename <file>patient_xyz_raw.edf</file>, channel number (e.g. 3), and <var>varargin</var> (optional args)
+    - computes wavelet decomp for 20 freqs, Power (/Amplitude) and Phase
+    - saves 40 (=2x20) intermediate files in a temporary cache
+    - calls <heldep>sm_MergDats<heldep>
+    - combines intermediate files and saves as <file>patient_xyz.dat</file>
+  
+  <smdep>sm_PredictIHKA_getAllFeatures</smdep>
+  - reads from <fold>raw/data/path</fold> only for <file>patient_xyz_raw.txt</file> files, and from <fold>wavelet/power/path</fold> for <file>patient_xyz.dat</file>
+  - <var>ops.bins, ops.pct</var> defines prediction time bins and % of samples to chose from these bins in training resp.
+  - <var>sessions</var> stores list of tuples (<file>patient_xyz.txt , patient_xyz.dat</file>)
+  - <var>tims</var> empty list of matrices, <var>tims{i}</var> $N\\times$$M$ where $N$ is the number of seizures in the $i$'th componant and $M$ is the number of bins + 2 (one extra for the intraictal timestamp, one for postictal timestamp)
+  - loop: for each session
+    - for each preictal time bin
+      - call <buzdep>getXPctTim</buzdep> to sample timestamps
+      - for each timestamp 
+        - compute the features with <smdep>sm_PredictIHKA_calcFeatures<smdep>
+  - outputs a features matrix <file>features.mat</file> with 'save'—a MatLab function (saves specified workspace variables)
+  
+  [from above] <smdep>sm_PredictIHKA_calcFeatures</smdep> (it's a function)
+  - takes: <var>fname</var> is the path to the feature file, <var>tim</var> is <var>tims{i}</var> from earlier, <var>ops</var> is a struct with all other options and metadata. 
+  - for each channel
+    - use <buzdep>LoadBinary</buzdep> to load a <var>ops.durFeat</var> (5 second) long time segment of each freq channel before the starting times specified by <var>tim</var>
+    - save the <var>features</var>
+      - mean power
+      - whole time series in window?? (5 x 2000 dta points)
+      - phase-amplitude correlation
+      - coherence between every pair of features (n(n-1)/2 = 6)
+  - returns <var>features</var>
+  
+  <smdep>sm_PredictIHKA</smdep>
+  - loads a feature file to train the RUSboost model to predict which time bin the data originated from relative to the nearest seizure
+  - loads features from <file>features.mat</file>
+  - train/val/test - split
+  - serializes model to <file>classification.mat</file>
+  
+  <smdep>sm_makeAllSeizurePred</smdep>
+  - this function takes a trained model with accompanying feature definition and calculates the predicted time to seizure. pulls data from both the raw time series, and the pre-calculated feature space
+  - loads model <file>classification.mat</file> and features <file>features.mat</file>
+  - loop over all sessions
+    - call <smdep>sm_getSeizurePred</smdep>
+      - this function takes the classifier in rusTree and applies the feature space specified in ops and classified ever moment in time for the file (fname)
+      - 
+    - save predictions <file>predict.mat</file>
+  
+  
+  ## What are all the `ops`?
+  **Hyper parameters**
+  - **durFeat** Window length in seconds
+  - **bins** the prediction time bins
+  
+  **Data parameters**
+  - **Fs** Sample rate, in Hz
+  
+  
+  
+  **Misc**
+  - **nCh_featureFile** is this the number of frequency channels in the wavelet transform (-> hyper param) or the number of electrode channels (-> data param)?
+  
+  ---
+  
+  ## Discussion
+  
+  The data, every step of the way is
+  - raw `.edf` files (~1.3G for a 24h recording) (question how quantized is this original signal? Probably i32 or i64)
+  - `.dat` (~13G) files which contain 16bit quantization of 
+    - raw x1
+    - wavelet conv phase x20
+    - wavelet conv power x20
+  - `feature.mat` files with features (~7.3M)
+  - `model` a trained model (aka `classification.mat`) (~21M), shared over many seizures
+  - `predict.mat` predictions (...?)
+  
+  
+  I think this codebase is going to be much more concise and easier to read in Python because we won't have to worry about indices anymore—which are among the major culprits of confusion. However, this shift will require some thinking before implementation since it may require us to make some adjustments to how we store data... especially the .dat indexing scheme. 
+  
+  ### Questions 
+  After running `sm_MakeAll_getPowerPerChannel.m`—Is the original time-series preserved (as a channel) in the `.dat` files, or is it only the wavelet power filter bank? 
+  
+  
+  
+  ---
+  
+  
+  <style>
+  fold {
+    color:green; // i/o stuff
+  }
+  
+  file {
+    color:darkgreen; // i/o stuff
+  }
+  
+  mldep {
+    color:red; // matlab built-in dependency
+  }
+  
+  heldep {
+    color:darkred; // local dependency from helpers
+  }
+  
+  buzdep {
+    color:darkorange;
+  }
+  
+  smdep {
+    color:darkblue; // sam mckenzie dependency
+  }
+  
+  var {
+    color:pink;
+  }
+  </style>
+  
+  ### Mermaid
+  You might want to use a mermaid flowchart. May be un-necessary... we'll see. 
+  
+  ```mermaid
+  sequenceDiagram
+      participant Alice
+      participant Bob
+      Alice->John: Hello John, how are you?
+      loop Healthcheck
+          John->John: Fight against hypochondria
+      end
+      Note right of John: Rational thoughts <br/>prevail...
+      John-->Alice: Great!
+      John->Bob: How about you?
+      Bob-->John: Jolly good!
+  ```
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
