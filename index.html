@@ -1353,8 +1353,51 @@ body p {
 <link rel="stylesheet" href="css/katex.min.css">
 <link rel="stylesheet" href="css/codemirror.css">
 <link rel="stylesheet" href="css/main.min.css">
-  
-  <script></script>
+  <script src="js/lodash.min.js"></script>
+<script src="js/codemirror/codemirror.js"></script>
+<script src="js/codemirror/mode/meta.js"></script>
+<script src="js/codemirror/addon/mode/loadmode.js"></script>
+<script src="js/codemirror/addon/runmode/runmode.js"></script>
+
+  <script>
+function decodeEntities (text) {
+  var entities = [
+    ['apos', '\''],
+    ['amp', '&'],
+    ['lt', '<'],
+    ['gt', '>'],
+    ['#63', '\?'],
+    ['#36', '\$']
+  ]
+
+  for (var i = 0, max = entities.length; i < max; ++i) {
+    text = text.replace(new RegExp(`&${entities[i][0]};`, 'g'), entities[i][1])
+  }
+
+  return text
+}
+CodeMirror.modeURL = 'https://cdn.jsdelivr.net/npm/codemirror@5.40.2/mode/%N/%N.js';
+
+function displayCodeBlocks() {
+  _.forEach(
+    document.querySelectorAll('.code code'),
+    el => {
+      el.parentNode.className += ' cm-s-dracula'
+      let syntax = CodeMirror.findModeByName(el.className)
+      if (syntax == null) syntax = CodeMirror.findModeByName('Plain Text')
+      CodeMirror.requireMode(syntax.mode, () => {
+        const content = decodeEntities(el.innerHTML)
+        el.innerHTML = ''
+        CodeMirror.runMode(content, syntax.mime, el, {
+          tabSize: 2
+        })
+      })
+    }
+  )
+}
+
+document.addEventListener('DOMContentLoaded', displayCodeBlocks);
+</script>
 </head>
 <body data-theme="white">
 <h1 id="McKenzieLab-Repository-Matlab-code" data-line="0">McKenzieLab Repository, Matlab code</h1>
@@ -1429,7 +1472,7 @@ body p {
 <li data-line="51">train/val/test - split</li>
 <li data-line="52">serializes model to <file>classification.mat</file></li>
 </ul>
-<p data-line="54"><smdep>sm_makeAllSeizurePred</smdep></p>
+<p data-line="54"><smdep>sm_MakeAllSeizurePred</smdep></p>
 <ul>
 <li data-line="55">this function takes a trained model with accompanying feature definition and calculates the predicted time to seizure. pulls data from both the raw time series, and the pre-calculated feature space</li>
 <li data-line="56">loads model <file>classification.mat</file> and features <file>features.mat</file></li>
@@ -1446,61 +1489,108 @@ body p {
 </li>
 </ul>
 <h2 id="What-are-all-the-ops" data-line="64">What are all the <code>ops</code>?</h2>
-<p data-line="65"><strong>Hyper parameters</strong></p>
+<p data-line="65"><em>Color code</em><br />
+-&gt; <strong>BLACK</strong> is for options defined in <smdep>sm_PredictIHKA_getAllFeatures.m</smdep><br />
+-&gt; <red><strong>RED</strong> is for options defined in <smdep>sm_PredictIHKA.m</smdep>, these options are saved with the model <code>classifier.mat</code>. These options are then loaded into <smdep>sm_MakeAllSeizurePred</smdep> and passed as an argument to <smdep>sm_getSeizurePred</smdep></red></p>
+<p data-line="70"><strong>File IO</strong></p>
 <ul>
-<li data-line="66"><strong>durFeat</strong> Window length in seconds</li>
-<li data-line="67"><strong>bins</strong> the prediction time bins</li>
+<li data-line="71"><strong>ops.RawDataPath</strong> Path to the directory where the raw <code>.edf</code> data files are stored.</li>
+<li data-line="72"><strong>ops.FeaturePath</strong> Path to directory where <code>.dat</code> files are stored.</li>
+<li data-line="73"><strong>ops.FeatureFileOutput</strong> Path to the feature file <code>features.mat</code>.</li>
+<li data-line="74"><red><strong>ops.ClassifierFileOutput</strong></red> Path to serialized model <code>classification.mat</code>.</li>
 </ul>
-<p data-line="69"><strong>Data parameters</strong></p>
+<p data-line="76"><strong>Hyper parameters</strong></p>
 <ul>
-<li data-line="70"><strong>Fs</strong> Sample rate, in Hz</li>
+<li data-line="77"><strong>ops.durFeat</strong> Window length in seconds</li>
+<li data-line="78"><strong>ops.bins</strong> Prediction time bins, e.g. <code>[10800 3600 600 10]</code> (i.e. 3h, 1h, 10min, 10sec in seconds)</li>
+<li data-line="79"><strong>ops.pct</strong> The ratio at which to sample data from each of the time bins <code>ops.bins</code>, e.g. <code>[.05 .05 .2 1 1 .2]</code>. The length is <code>len(ops.bins) + 2</code>, the extra two on the end correspond to the intra-ictal and post-ictal sampling ratios. Mnemonic: “percent”.</li>
+<li data-line="80"><strong>ops.nCh_featureFile</strong> is this the number of frequency channels in the wavelet transform (-&gt; hyper param) or the number of electrode channels (-&gt; data param)?</li>
+<li data-line="81"><strong>ops.nBins</strong> Length of <code>ops.pct</code> which is 2 greater than the length of <code>ops.bins</code>. Comment: think of cleaner way to encapsulate <code>pct</code> and <code>bins</code>.</li>
+<li data-line="82"><strong>ops.timPost</strong> Defines the interval of time in seconds between seizure offset and official commencement of post-ictal time. e.g. <code>600</code> <em>Note to self: verify this definition, especially the ‘after seizure offset’ part; what is the seizure offset, did I guess it right?</em></li>
+<li data-line="83"><strong>ops.freqs</strong> The frequencies of the wavelets chosen for convolution (in Hz?). Logspace is more informative. e.g. <code>logspace(log10(.5),log10(200),20</code>.</li>
+<li data-line="84"><strong>ops.durFeat</strong> Duration in seconds of windows used by model and in featurizing. e.g. <code>5</code></li>
 </ul>
-<p data-line="74"><strong>Misc</strong></p>
+<p data-line="86"><strong>Data Parameters</strong></p>
 <ul>
-<li data-line="75"><strong>nCh_featureFile</strong> is this the number of frequency channels in the wavelet transform (-&gt; hyper param) or the number of electrode channels (-&gt; data param)?</li>
+<li data-line="87"><strong>ops.Fs</strong> Sample rate, in Hz. e.g. <code>2000</code></li>
+<li data-line="88"><strong>ops.amp_idx</strong> indices of selected selected amplitude (power). e.g. <code>15:20</code> <em>Why are only a subset used? There is a comment that says “must match index in getPowerPerChannel”</em></li>
+<li data-line="89"><strong>ops.ph_idx</strong> indices of selected phase e.g. <code>1:10</code>. There is a comment that says “must match index in getPowerPerChannel”</li>
+<li data-line="90"><strong>ops.reScalePhase</strong> e.g. <code>1000</code> <em>What does this do, why 1000?</em></li>
+<li data-line="91"><strong>ops.reScalePower</strong> e.g. <code>1000</code> <em>What does this do, why 1000?</em></li>
 </ul>
-<hr />
-<h1 id="Discussion" data-line="79">Discussion</h1>
-<p data-line="81">The data, every step of the way is</p>
+<p data-line="93"><strong>Training Parameters</strong></p>
 <ul>
-<li data-line="82">raw <code>.edf</code> files (~1.3G for a 24h recording) (question how quantized is this original signal? Probably i32 or i64)</li>
-<li data-line="83"><code>.dat</code> (~13G) files which contain 16bit quantization of
+<li data-line="94"><red><strong>ops.N</strong></red> (int) The number of observations in the training sample. Currently this is set to half the length of <code>training</code>.</li>
+<li data-line="95"><red><strong>ops.t</strong></red> A template decision tree. e.g. <code>templateTree('MaxNumSplits',ops.N)</code>, <a href="https://www.mathworks.com/help/stats/templatetree.html">templateTree</a> is a MatLab built-in.</li>
+<li data-line="96"><red><strong>ops.NumLearningCycles</strong></red> e.g. <code>500</code></li>
+<li data-line="97"><red><strong>ops.Learners</strong></red> <code>= ops.t</code></li>
+<li data-line="98"><red><strong>ops.LearnRate</strong></red> <code>=0.1</code></li>
+<li data-line="99"><red><strong>ops.Method</strong></red> <code>'RUSBoost'</code></li>
+</ul>
+<p data-line="103"><strong>Misc</strong></p>
 <ul>
-<li data-line="84">raw x1</li>
-<li data-line="85">wavelet conv phase x20</li>
-<li data-line="86">wavelet conv power x20</li>
+<li data-line="104"><strong>ops.ch_phaseAmp</strong></li>
+<li data-line="105"><strong>ops.nCh_featureFile</strong> Number of channels in the <code>.dat</code> files. e.g. <code>41</code>—this number comes from 20 power, 20 phase, 1 time series</li>
+<li data-line="106"><strong>ops.nCh_raw</strong> Number of hardware (electrode) channels. e.g. <code>4</code> in the case of the mouse.</li>
+<li data-line="107"><strong>ops.features</strong> This variable binds to the function <smdep>sm_PredictIHKA_calcFeatures</smdep></li>
+<li data-line="108"><red><strong>ops.nGroup</strong></red> is defined as <code>length(dat)</code>, where <code>dat</code> is some global variable containing some form of data <em>What data? I figured it out at some point but forgot… TODO, next time you figure it out write the information here!</em></li>
+<li data-line="109"><red><strong>ops.rix</strong></red> A random sample of indices for training sample. <em>In the code I think it’s just a re-arrangement of all the indices for group. Only used to shuffle the group variable. <code>group</code> is some function of <code>dat</code></em></li>
+</ul>
+<p data-line="112"><em>There is a comment that reads</em></p>
+<pre class="code CodeMirror" data-line="113">
+          <span class="filename"></span>
+          <span class="lineNumber CodeMirror-gutters"><span class="CodeMirror-linenumber">1</span><span class="CodeMirror-linenumber">2</span><span class="CodeMirror-linenumber">3</span><span class="CodeMirror-linenumber">4</span><span class="CodeMirror-linenumber">5</span></span>
+          <code class="matlab">%channel for phase amplitude coupling
+%ch1 = ipsi HPC
+%ch2 = ipsi cortex
+%ch3 = contra HPC
+%ch4 = contral cortex
+</code>
+        </pre><hr />
+<h1 id="Discussion" data-line="123">Discussion</h1>
+<p data-line="125">The data, every step of the way is</p>
+<ul>
+<li data-line="126">raw <code>.edf</code> files (~1.3G for a 24h recording) (question how quantized is this original signal? Probably i32 or i64)</li>
+<li data-line="127"><code>.dat</code> (~13G) files which contain 16bit quantization of
+<ul>
+<li data-line="128">raw x1</li>
+<li data-line="129">wavelet conv phase x20</li>
+<li data-line="130">wavelet conv power x20</li>
 </ul>
 </li>
-<li data-line="87"><code>feature.mat</code> files with features (~7.3M)</li>
-<li data-line="88"><code>model</code> a trained model (aka <code>classification.mat</code>) (~21M), shared over many seizures</li>
-<li data-line="89"><code>predict.mat</code> predictions (…?)</li>
+<li data-line="131"><code>feature.mat</code> files with features (~7.3M)</li>
+<li data-line="132"><code>model</code> a trained model (aka <code>classification.mat</code>) (~21M), shared over many seizures</li>
+<li data-line="133"><code>predict.mat</code> predictions (…?)</li>
 </ul>
-<p data-line="92">I think this codebase is going to be much more concise and easier to read in Python because we won’t have to worry about indices anymore—which are among the major culprits of confusion. However, this shift will require some thinking before implementation since it may require us to make some adjustments to how we store data… especially the .dat indexing scheme.</p>
-<h3 id="Cloud-Compute" data-line="94">Cloud Compute</h3>
-<p data-line="96">In the below diagram, I think we fall into Virtual Machines (Build new <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> Require full control <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> VM), that we can build new. Yes, we will need to migrate a database, but I think we can treat the database as if it were new (am I correct in assuming this? <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> ask SM)</p>
-<p data-line="98"><img src="https://raw.githubusercontent.com/dcxSt/McKenzieLab/gh-pages/assets/compute-choices-azure.png" alt="Azure Compute Choices" /></p>
-<h3 id="Core-Questions" data-line="100">Core Questions</h3>
+<p data-line="136">I think this codebase is going to be much more concise and easier to read in Python because we won’t have to worry about indices anymore—which are among the major culprits of confusion. However, this shift will require some thinking before implementation since it may require us to make some adjustments to how we store data… especially the .dat indexing scheme.</p>
+<h3 id="Cloud-Compute" data-line="138">Cloud Compute</h3>
+<p data-line="140">In the below diagram, I think we fall into Virtual Machines (Build new -&gt; Require full control -&gt; VM), that we can build new. Yes, we will need to migrate a database, but I think we can treat the database as if it were new (am I correct in assuming this? -&gt; ask SM)</p>
+<p data-line="142"><img src="https://raw.githubusercontent.com/dcxSt/McKenzieLab/gh-pages/assets/compute-choices-azure.png" alt="Azure Compute Choices" /></p>
+<h2 id="Core-Questions" data-line="144">Core Questions</h2>
+<p data-line="145">These are questions I’m trying to find answers to, whos answers are central to my utility as an employee.</p>
 <ul>
-<li data-line="101">How does the cloud computing &amp; storage payment system work?
+<li data-line="147">How does the cloud computing &amp; storage payment system work?
 <ul>
-<li data-line="102">Is it tokens? How do tokens work? So far my best guess is that you pay some monthly rate for storage, and then you pay for the computing with a tokens system per in units of <em>cores</em> <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> <em>hours</em> consumed.</li>
+<li data-line="148">Is it tokens? How do tokens work? So far my best guess is that you pay some monthly rate for storage, and then you pay for the computing with a tokens system per in units of <em>cores</em> <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> <em>hours</em> consumed.</li>
 </ul>
 </li>
 </ul>
-<h3 id="Other-Questions" data-line="105">Other Questions</h3>
+<h2 id="Other-Questions" data-line="151">Other Questions</h2>
 <ul>
-<li data-line="106">After running <code>sm_MakeAll_getPowerPerChannel.m</code>—Is the original time-series preserved (as a channel) in the <code>.dat</code> files, or is it only the wavelet power filter bank?</li>
-<li data-line="107">Is there any reason why we might want a different database type (e.g. SQL)? My sense is probably not. But need to look into this!</li>
-<li data-line="108">What should the process be for adding data to the database? Is this a first-class citizen (i.e. do we want to make this as simple as possible?)</li>
-<li data-line="109">Is there a plan to build an API for this database? So that “users” (general public) can run their own Featurizing + ML models?</li>
+<li data-line="152">After running <code>sm_MakeAll_getPowerPerChannel.m</code>—Is the original time-series preserved (as a channel) in the <code>.dat</code> files, or is it only the wavelet power filter bank?</li>
+<li data-line="153">Is there any reason why we might want a different database type (e.g. SQL)? My sense is probably not. But need to look into this!</li>
+<li data-line="154">What should the process be for adding data to the database? Is this a first-class citizen (i.e. do we want to make this as simple as possible?)</li>
+<li data-line="155">Is there a plan to build an API for this database? So that “users” (general public) can run their own Featurizing + ML models?</li>
 </ul>
-<h3 id="Todo" data-line="112">Todo</h3>
-<p data-line="113">Learn about:</p>
+<h2 id="Todo" data-line="158">Todo</h2>
+<p data-line="159">Learn about:</p>
 <ul>
-<li class="taskListItem" data-line="114"><label class='taskListItem' for='checkbox-115'><input type='checkbox' id='checkbox-115'/> Docker,</label></li>
-<li class="taskListItem" data-line="115"><label class='taskListItem' for='checkbox-116'><input type='checkbox' id='checkbox-116'/> Kubernetes</label></li>
+<li class="taskListItem" data-line="160"><label class='taskListItem' for='checkbox-161'><input type='checkbox' id='checkbox-161'/> Docker,</label></li>
+<li class="taskListItem" data-line="161"><label class='taskListItem' for='checkbox-162'><input type='checkbox' id='checkbox-162'/> Kubernetes</label></li>
 </ul>
-<p data-line="118"><br/><br/><br/><br/><br/><br />
+<h2 id="Loose-threads-note-to-self" data-line="163">Loose threads (note to self)</h2>
+<p data-line="165">Look into <code>mscohere</code>: is it a matlab signal toolkit builtin? It’s used in <code>sm_PredictIHKA_calcFeatures.m</code></p>
+<p data-line="168"><br/><br/><br/><br/><br/><br />
 <br/><br/><br/><br/><br/><br />
 <br/><br/><br/><br/><br/></p>
 <style>
@@ -1530,6 +1620,10 @@ smdep {
 
 var {
   color:pink;
+}
+
+red {
+  color:red;
 }
 </style>
 

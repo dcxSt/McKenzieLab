@@ -1,5 +1,5 @@
 createdAt: "2022-04-19T14:21:59.567Z"
-updatedAt: "2022-04-21T14:48:32.941Z"
+updatedAt: "2022-04-22T11:07:29.383Z"
 type: "MARKDOWN_NOTE"
 folder: "36748f63b14206359257"
 title: "McKenzieLab Repository, Matlab code"
@@ -61,7 +61,7 @@ content: '''
   - train/val/test - split
   - serializes model to <file>classification.mat</file>
   
-  <smdep>sm_makeAllSeizurePred</smdep>
+  <smdep>sm_MakeAllSeizurePred</smdep>
   - this function takes a trained model with accompanying feature definition and calculates the predicted time to seizure. pulls data from both the raw time series, and the pre-calculated feature space
   - loads model <file>classification.mat</file> and features <file>features.mat</file>
   - loop over all sessions
@@ -72,17 +72,61 @@ content: '''
   
   
   ## What are all the `ops`?
-  **Hyper parameters**
-  - **durFeat** Window length in seconds
-  - **bins** the prediction time bins
+  *Color code*
+  -> **BLACK** is for options defined in <smdep>sm_PredictIHKA_getAllFeatures.m</smdep>
+  -> <red>**RED** is for options defined in <smdep>sm_PredictIHKA.m</smdep>, these options are saved with the model `classifier.mat`. These options are then loaded into <smdep>sm_MakeAllSeizurePred</smdep> and passed as an argument to <smdep>sm_getSeizurePred</smdep></red>
   
-  **Data parameters**
-  - **Fs** Sample rate, in Hz
+  
+  **File IO**
+  - **ops.RawDataPath** Path to the directory where the raw `.edf` data files are stored.
+  - **ops.FeaturePath** Path to directory where `.dat` files are stored. 
+  - **ops.FeatureFileOutput** Path to the feature file `features.mat`.
+  - <red>**ops.ClassifierFileOutput**</red> Path to serialized model `classification.mat`. 
+  
+  **Hyper parameters**
+  - **ops.durFeat** Window length in seconds
+  - **ops.bins** Prediction time bins, e.g. `[10800 3600 600 10]` (i.e. 3h, 1h, 10min, 10sec in seconds)
+  - **ops.pct** The ratio at which to sample data from each of the time bins `ops.bins`, e.g. `[.05 .05 .2 1 1 .2]`. The length is `len(ops.bins) + 2`, the extra two on the end correspond to the intra-ictal and post-ictal sampling ratios. Mnemonic: "percent".
+  - **ops.nCh_featureFile** is this the number of frequency channels in the wavelet transform (-> hyper param) or the number of electrode channels (-> data param)?
+  - **ops.nBins** Length of `ops.pct` which is 2 greater than the length of `ops.bins`. Comment: think of cleaner way to encapsulate `pct` and `bins`. 
+  - **ops.timPost** Defines the interval of time in seconds between seizure offset and official commencement of post-ictal time. e.g. `600` *Note to self: verify this definition, especially the 'after seizure offset' part; what is the seizure offset, did I guess it right?*
+  - **ops.freqs** The frequencies of the wavelets chosen for convolution (in Hz?). Logspace is more informative. e.g. `logspace(log10(.5),log10(200),20`. 
+  - **ops.durFeat** Duration in seconds of windows used by model and in featurizing. e.g. `5`
+  
+  **Data Parameters**
+  - **ops.Fs** Sample rate, in Hz. e.g. `2000`
+  - **ops.amp_idx** indices of selected selected amplitude (power). e.g. `15:20` *Why are only a subset used? There is a comment that says "must match index in getPowerPerChannel"*
+  - **ops.ph_idx** indices of selected phase e.g. `1:10`. There is a comment that says "must match index in getPowerPerChannel"
+  - **ops.reScalePhase** e.g. `1000` *What does this do, why 1000?*
+  - **ops.reScalePower** e.g. `1000` *What does this do, why 1000?*
+  
+  **Training Parameters**
+  - <red>**ops.N**</red> (int) The number of observations in the training sample. Currently this is set to half the length of `training`. 
+  - <red>**ops.t**</red> A template decision tree. e.g. `templateTree('MaxNumSplits',ops.N)`, [templateTree](https://www.mathworks.com/help/stats/templatetree.html) is a MatLab built-in.
+  - <red>**ops.NumLearningCycles**</red> e.g. `500`
+  - <red>**ops.Learners**</red> `= ops.t`
+  - <red>**ops.LearnRate**</red> `=0.1`
+  - <red>**ops.Method**</red> `'RUSBoost'`
   
   
   
   **Misc**
-  - **nCh_featureFile** is this the number of frequency channels in the wavelet transform (-> hyper param) or the number of electrode channels (-> data param)?
+  - **ops.ch_phaseAmp**
+  - **ops.nCh_featureFile** Number of channels in the `.dat` files. e.g. `41`—this number comes from 20 power, 20 phase, 1 time series
+  - **ops.nCh_raw** Number of hardware (electrode) channels. e.g. `4` in the case of the mouse.
+  - **ops.features** This variable binds to the function <smdep>sm_PredictIHKA_calcFeatures</smdep>
+  - <red>**ops.nGroup**</red> is defined as `length(dat)`, where `dat` is some global variable containing some form of data *What data? I figured it out at some point but forgot... TODO, next time you figure it out write the information here!*
+  - <red>**ops.rix**</red> A random sample of indices for training sample. *In the code I think it's just a re-arrangement of all the indices for group. Only used to shuffle the group variable. `group` is some function of `dat`*
+  
+  
+  *There is a comment that reads*
+  ```matlab
+  %channel for phase amplitude coupling
+  %ch1 = ipsi HPC
+  %ch2 = ipsi cortex
+  %ch3 = contra HPC
+  %ch4 = contral cortex
+  ```
   
   ---
   
@@ -103,26 +147,32 @@ content: '''
   
   ### Cloud Compute
   
-  In the below diagram, I think we fall into Virtual Machines (Build new $\\to$ Require full control $\\to$ VM), that we can build new. Yes, we will need to migrate a database, but I think we can treat the database as if it were new (am I correct in assuming this? $\\to$ ask SM)
+  In the below diagram, I think we fall into Virtual Machines (Build new -> Require full control -> VM), that we can build new. Yes, we will need to migrate a database, but I think we can treat the database as if it were new (am I correct in assuming this? -> ask SM)
   
   ![Azure Compute Choices](/Users/steve/boostnote/pics/unm/compute-choices-azure.png)
   
-  ### Core Questions
+  ## Core Questions 
+  These are questions I'm trying to find answers to, whos answers are central to my utility as an employee. 
+  
   - How does the cloud computing & storage payment system work?
     - Is it tokens? How do tokens work? So far my best guess is that you pay some monthly rate for storage, and then you pay for the computing with a tokens system per in units of *cores* $\\times$ *hours* consumed.
   
   
-  ### Other Questions 
+  ## Other Questions 
   - After running `sm_MakeAll_getPowerPerChannel.m`—Is the original time-series preserved (as a channel) in the `.dat` files, or is it only the wavelet power filter bank? 
   - Is there any reason why we might want a different database type (e.g. SQL)? My sense is probably not. But need to look into this!
   - What should the process be for adding data to the database? Is this a first-class citizen (i.e. do we want to make this as simple as possible?)
   - Is there a plan to build an API for this database? So that "users" (general public) can run their own Featurizing + ML models?
   
   
-  ### Todo
+  ## Todo
   Learn about: 
   - [ ] Docker, 
   - [ ] Kubernetes
+  
+  ## Loose threads (note to self)
+  
+  Look into `mscohere`: is it a matlab signal toolkit builtin? It's used in `sm_PredictIHKA_calcFeatures.m`
   
   
   <br/><br/><br/><br/><br/>
@@ -156,6 +206,10 @@ content: '''
   
   var {
     color:pink;
+  }
+  
+  red {
+    color:red;
   }
   </style>
   
