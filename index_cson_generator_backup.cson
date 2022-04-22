@@ -1,5 +1,5 @@
 createdAt: "2022-04-19T14:21:59.567Z"
-updatedAt: "2022-04-22T11:07:29.383Z"
+updatedAt: "2022-04-22T11:15:47.789Z"
 type: "MARKDOWN_NOTE"
 folder: "36748f63b14206359257"
 title: "McKenzieLab Repository, Matlab code"
@@ -77,13 +77,13 @@ content: '''
   -> <red>**RED** is for options defined in <smdep>sm_PredictIHKA.m</smdep>, these options are saved with the model `classifier.mat`. These options are then loaded into <smdep>sm_MakeAllSeizurePred</smdep> and passed as an argument to <smdep>sm_getSeizurePred</smdep></red>
   
   
-  **File IO**
+  ***File IO***
   - **ops.RawDataPath** Path to the directory where the raw `.edf` data files are stored.
   - **ops.FeaturePath** Path to directory where `.dat` files are stored. 
   - **ops.FeatureFileOutput** Path to the feature file `features.mat`.
   - <red>**ops.ClassifierFileOutput**</red> Path to serialized model `classification.mat`. 
   
-  **Hyper parameters**
+  ***Hyper parameters***
   - **ops.durFeat** Window length in seconds
   - **ops.bins** Prediction time bins, e.g. `[10800 3600 600 10]` (i.e. 3h, 1h, 10min, 10sec in seconds)
   - **ops.pct** The ratio at which to sample data from each of the time bins `ops.bins`, e.g. `[.05 .05 .2 1 1 .2]`. The length is `len(ops.bins) + 2`, the extra two on the end correspond to the intra-ictal and post-ictal sampling ratios. Mnemonic: "percent".
@@ -92,15 +92,18 @@ content: '''
   - **ops.timPost** Defines the interval of time in seconds between seizure offset and official commencement of post-ictal time. e.g. `600` *Note to self: verify this definition, especially the 'after seizure offset' part; what is the seizure offset, did I guess it right?*
   - **ops.freqs** The frequencies of the wavelets chosen for convolution (in Hz?). Logspace is more informative. e.g. `logspace(log10(.5),log10(200),20`. 
   - **ops.durFeat** Duration in seconds of windows used by model and in featurizing. e.g. `5`
+  - **ops.nCh_featureFile** Number of channels in the `.dat` files. e.g. `41`—this number comes from 20 power, 20 phase, 1 time series
   
-  **Data Parameters**
+  ***Data Parameters***
   - **ops.Fs** Sample rate, in Hz. e.g. `2000`
   - **ops.amp_idx** indices of selected selected amplitude (power). e.g. `15:20` *Why are only a subset used? There is a comment that says "must match index in getPowerPerChannel"*
   - **ops.ph_idx** indices of selected phase e.g. `1:10`. There is a comment that says "must match index in getPowerPerChannel"
   - **ops.reScalePhase** e.g. `1000` *What does this do, why 1000?*
   - **ops.reScalePower** e.g. `1000` *What does this do, why 1000?*
+  - **ops.nCh_raw** Number of hardware (electrode) channels. e.g. `4` in the case of the mouse.
+  - **ops.ch_phaseAmp** Todo with the channel for phase amplitude coupling. `=2` (see comment below)
   
-  **Training Parameters**
+  ***Training Parameters***
   - <red>**ops.N**</red> (int) The number of observations in the training sample. Currently this is set to half the length of `training`. 
   - <red>**ops.t**</red> A template decision tree. e.g. `templateTree('MaxNumSplits',ops.N)`, [templateTree](https://www.mathworks.com/help/stats/templatetree.html) is a MatLab built-in.
   - <red>**ops.NumLearningCycles**</red> e.g. `500`
@@ -110,10 +113,7 @@ content: '''
   
   
   
-  **Misc**
-  - **ops.ch_phaseAmp**
-  - **ops.nCh_featureFile** Number of channels in the `.dat` files. e.g. `41`—this number comes from 20 power, 20 phase, 1 time series
-  - **ops.nCh_raw** Number of hardware (electrode) channels. e.g. `4` in the case of the mouse.
+  ***Misc***
   - **ops.features** This variable binds to the function <smdep>sm_PredictIHKA_calcFeatures</smdep>
   - <red>**ops.nGroup**</red> is defined as `length(dat)`, where `dat` is some global variable containing some form of data *What data? I figured it out at some point but forgot... TODO, next time you figure it out write the information here!*
   - <red>**ops.rix**</red> A random sample of indices for training sample. *In the code I think it's just a re-arrangement of all the indices for group. Only used to shuffle the group variable. `group` is some function of `dat`*

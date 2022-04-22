@@ -1492,14 +1492,14 @@ document.addEventListener('DOMContentLoaded', displayCodeBlocks);
 <p data-line="65"><em>Color code</em><br />
 -&gt; <strong>BLACK</strong> is for options defined in <smdep>sm_PredictIHKA_getAllFeatures.m</smdep><br />
 -&gt; <red><strong>RED</strong> is for options defined in <smdep>sm_PredictIHKA.m</smdep>, these options are saved with the model <code>classifier.mat</code>. These options are then loaded into <smdep>sm_MakeAllSeizurePred</smdep> and passed as an argument to <smdep>sm_getSeizurePred</smdep></red></p>
-<p data-line="70"><strong>File IO</strong></p>
+<p data-line="70"><strong><em>File IO</em></strong></p>
 <ul>
 <li data-line="71"><strong>ops.RawDataPath</strong> Path to the directory where the raw <code>.edf</code> data files are stored.</li>
 <li data-line="72"><strong>ops.FeaturePath</strong> Path to directory where <code>.dat</code> files are stored.</li>
 <li data-line="73"><strong>ops.FeatureFileOutput</strong> Path to the feature file <code>features.mat</code>.</li>
 <li data-line="74"><red><strong>ops.ClassifierFileOutput</strong></red> Path to serialized model <code>classification.mat</code>.</li>
 </ul>
-<p data-line="76"><strong>Hyper parameters</strong></p>
+<p data-line="76"><strong><em>Hyper parameters</em></strong></p>
 <ul>
 <li data-line="77"><strong>ops.durFeat</strong> Window length in seconds</li>
 <li data-line="78"><strong>ops.bins</strong> Prediction time bins, e.g. <code>[10800 3600 600 10]</code> (i.e. 3h, 1h, 10min, 10sec in seconds)</li>
@@ -1509,29 +1509,29 @@ document.addEventListener('DOMContentLoaded', displayCodeBlocks);
 <li data-line="82"><strong>ops.timPost</strong> Defines the interval of time in seconds between seizure offset and official commencement of post-ictal time. e.g. <code>600</code> <em>Note to self: verify this definition, especially the ‘after seizure offset’ part; what is the seizure offset, did I guess it right?</em></li>
 <li data-line="83"><strong>ops.freqs</strong> The frequencies of the wavelets chosen for convolution (in Hz?). Logspace is more informative. e.g. <code>logspace(log10(.5),log10(200),20</code>.</li>
 <li data-line="84"><strong>ops.durFeat</strong> Duration in seconds of windows used by model and in featurizing. e.g. <code>5</code></li>
+<li data-line="85"><strong>ops.nCh_featureFile</strong> Number of channels in the <code>.dat</code> files. e.g. <code>41</code>—this number comes from 20 power, 20 phase, 1 time series</li>
 </ul>
-<p data-line="86"><strong>Data Parameters</strong></p>
+<p data-line="87"><strong><em>Data Parameters</em></strong></p>
 <ul>
-<li data-line="87"><strong>ops.Fs</strong> Sample rate, in Hz. e.g. <code>2000</code></li>
-<li data-line="88"><strong>ops.amp_idx</strong> indices of selected selected amplitude (power). e.g. <code>15:20</code> <em>Why are only a subset used? There is a comment that says “must match index in getPowerPerChannel”</em></li>
-<li data-line="89"><strong>ops.ph_idx</strong> indices of selected phase e.g. <code>1:10</code>. There is a comment that says “must match index in getPowerPerChannel”</li>
-<li data-line="90"><strong>ops.reScalePhase</strong> e.g. <code>1000</code> <em>What does this do, why 1000?</em></li>
-<li data-line="91"><strong>ops.reScalePower</strong> e.g. <code>1000</code> <em>What does this do, why 1000?</em></li>
+<li data-line="88"><strong>ops.Fs</strong> Sample rate, in Hz. e.g. <code>2000</code></li>
+<li data-line="89"><strong>ops.amp_idx</strong> indices of selected selected amplitude (power). e.g. <code>15:20</code> <em>Why are only a subset used? There is a comment that says “must match index in getPowerPerChannel”</em></li>
+<li data-line="90"><strong>ops.ph_idx</strong> indices of selected phase e.g. <code>1:10</code>. There is a comment that says “must match index in getPowerPerChannel”</li>
+<li data-line="91"><strong>ops.reScalePhase</strong> e.g. <code>1000</code> <em>What does this do, why 1000?</em></li>
+<li data-line="92"><strong>ops.reScalePower</strong> e.g. <code>1000</code> <em>What does this do, why 1000?</em></li>
+<li data-line="93"><strong>ops.nCh_raw</strong> Number of hardware (electrode) channels. e.g. <code>4</code> in the case of the mouse.</li>
+<li data-line="94"><strong>ops.ch_phaseAmp</strong> Todo with the channel for phase amplitude coupling. <code>=2</code> (see comment below)</li>
 </ul>
-<p data-line="93"><strong>Training Parameters</strong></p>
+<p data-line="96"><strong><em>Training Parameters</em></strong></p>
 <ul>
-<li data-line="94"><red><strong>ops.N</strong></red> (int) The number of observations in the training sample. Currently this is set to half the length of <code>training</code>.</li>
-<li data-line="95"><red><strong>ops.t</strong></red> A template decision tree. e.g. <code>templateTree('MaxNumSplits',ops.N)</code>, <a href="https://www.mathworks.com/help/stats/templatetree.html">templateTree</a> is a MatLab built-in.</li>
-<li data-line="96"><red><strong>ops.NumLearningCycles</strong></red> e.g. <code>500</code></li>
-<li data-line="97"><red><strong>ops.Learners</strong></red> <code>= ops.t</code></li>
-<li data-line="98"><red><strong>ops.LearnRate</strong></red> <code>=0.1</code></li>
-<li data-line="99"><red><strong>ops.Method</strong></red> <code>'RUSBoost'</code></li>
+<li data-line="97"><red><strong>ops.N</strong></red> (int) The number of observations in the training sample. Currently this is set to half the length of <code>training</code>.</li>
+<li data-line="98"><red><strong>ops.t</strong></red> A template decision tree. e.g. <code>templateTree('MaxNumSplits',ops.N)</code>, <a href="https://www.mathworks.com/help/stats/templatetree.html">templateTree</a> is a MatLab built-in.</li>
+<li data-line="99"><red><strong>ops.NumLearningCycles</strong></red> e.g. <code>500</code></li>
+<li data-line="100"><red><strong>ops.Learners</strong></red> <code>= ops.t</code></li>
+<li data-line="101"><red><strong>ops.LearnRate</strong></red> <code>=0.1</code></li>
+<li data-line="102"><red><strong>ops.Method</strong></red> <code>'RUSBoost'</code></li>
 </ul>
-<p data-line="103"><strong>Misc</strong></p>
+<p data-line="106"><strong><em>Misc</em></strong></p>
 <ul>
-<li data-line="104"><strong>ops.ch_phaseAmp</strong></li>
-<li data-line="105"><strong>ops.nCh_featureFile</strong> Number of channels in the <code>.dat</code> files. e.g. <code>41</code>—this number comes from 20 power, 20 phase, 1 time series</li>
-<li data-line="106"><strong>ops.nCh_raw</strong> Number of hardware (electrode) channels. e.g. <code>4</code> in the case of the mouse.</li>
 <li data-line="107"><strong>ops.features</strong> This variable binds to the function <smdep>sm_PredictIHKA_calcFeatures</smdep></li>
 <li data-line="108"><red><strong>ops.nGroup</strong></red> is defined as <code>length(dat)</code>, where <code>dat</code> is some global variable containing some form of data <em>What data? I figured it out at some point but forgot… TODO, next time you figure it out write the information here!</em></li>
 <li data-line="109"><red><strong>ops.rix</strong></red> A random sample of indices for training sample. <em>In the code I think it’s just a re-arrangement of all the indices for group. Only used to shuffle the group variable. <code>group</code> is some function of <code>dat</code></em></li>

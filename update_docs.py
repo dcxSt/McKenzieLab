@@ -5,7 +5,7 @@ import cson
 import shutil
 
 NOTES_DIR = "/Users/steve/boostnote/notes"
-HTML_PATH = "/Users/steve/boostnote/letters/mckenzielabdocs.html"
+HTML_PATH = "/Users/steve/boostnote/unm/mckenzielabdocs.html"
 
 def get_dict_from_cson(file_path):
     with open(file_path,'r') as f:
