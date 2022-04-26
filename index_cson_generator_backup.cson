@@ -1,5 +1,5 @@
 createdAt: "2022-04-19T14:21:59.567Z"
-updatedAt: "2022-04-22T11:15:47.789Z"
+updatedAt: "2022-04-26T21:03:06.933Z"
 type: "MARKDOWN_NOTE"
 folder: "36748f63b14206359257"
 title: "McKenzieLab Repository, Matlab code"
@@ -23,7 +23,7 @@ content: '''
   
   ## Pseudocode of IHKA pipeline as is
   
-  <smdep>sm_MakeAll_getPowerPerChannel</smdep> calculates features to save to disk as .dat file. 
+  <smdep>sm_MakeAll_getPowerPerChannel</smdep> computes wavelet transforms and saves to disk as `.dat` file. 
   - Finds all <file>raw.edf</file> and <file>raw.txt</file> pairs inside of <fold>raw_data</fold>
   - For each (<file>patient_xyz_raw.txt</file>, <file>patient_xyz_raw.edf</file>) filepair, calls <smdep>sm_getPowerPerChannel</smdep> on each channel
     - args: takes filename <file>patient_xyz_raw.edf</file>, channel number (e.g. 3), and <var>varargin</var> (optional args)
@@ -145,6 +145,8 @@ content: '''
   
   I think this codebase is going to be much more concise and easier to read in Python because we won't have to worry about indices anymore—which are among the major culprits of confusion. However, this shift will require some thinking before implementation since it may require us to make some adjustments to how we store data... especially the .dat indexing scheme. 
   
+  I'm thinking of storing the `ops` in a `.toml` file for the python. 
+  
   ### Cloud Compute
   
   In the below diagram, I think we fall into Virtual Machines (Build new -> Require full control -> VM), that we can build new. Yes, we will need to migrate a database, but I think we can treat the database as if it were new (am I correct in assuming this? -> ask SM)
@@ -156,6 +158,8 @@ content: '''
   
   - How does the cloud computing & storage payment system work?
     - Is it tokens? How do tokens work? So far my best guess is that you pay some monthly rate for storage, and then you pay for the computing with a tokens system per in units of *cores* $\\times$ *hours* consumed.
+  - What data format to use? 
+    - It seems like the NWB data format is an attempt to unify neuroscience data formats. It might be short-sighted to keep using .dat files
   
   
   ## Other Questions 
@@ -163,6 +167,7 @@ content: '''
   - Is there any reason why we might want a different database type (e.g. SQL)? My sense is probably not. But need to look into this!
   - What should the process be for adding data to the database? Is this a first-class citizen (i.e. do we want to make this as simple as possible?)
   - Is there a plan to build an API for this database? So that "users" (general public) can run their own Featurizing + ML models?
+  - Might there by some sense in computing the wavelet convolutions on the fly? So that we only have to compute it for training and testing windows instead of the whole dataset. 
   
   
   ## Todo
@@ -173,6 +178,9 @@ content: '''
   ## Loose threads (note to self)
   
   Look into `mscohere`: is it a matlab signal toolkit builtin? It's used in `sm_PredictIHKA_calcFeatures.m`
+  
+  ## Refs
+  - [The NWB Software Ecosystem – Neurodata Without Borders](https://www.nwb.org/nwb-software/) 
   
   
   <br/><br/><br/><br/><br/>
