@@ -1,5 +1,5 @@
 createdAt: "2022-04-19T14:21:59.567Z"
-updatedAt: "2022-04-26T21:03:06.933Z"
+updatedAt: "2022-04-27T13:41:19.678Z"
 type: "MARKDOWN_NOTE"
 folder: "36748f63b14206359257"
 title: "McKenzieLab Repository, Matlab code"
@@ -12,6 +12,14 @@ content: '''
   
   This document attempts to provide the most-concise-as-possible outline of the codebase that would enable someone to re-write it from scratch. 
   
+  The pipeline processes each session as follows (1 session = 1 raw edf + 1 seizure metadata text file). 
+  
+  ![simplified flowchart](/Users/steve/boostnote/pics/unm/simplified_flowchart_mlab.png)
+  
+  It we add the parameters defined inside scripts, we get the following.
+  
+  ![flowchart with io](/Users/steve/boostnote/pics/unm/io_flowchart_mlab.png)
+  
   **Color Scheme**
   <fold>directory ("folder")</fold>
   <file>file</file>
@@ -21,7 +29,7 @@ content: '''
   <smdep>"sm" / core IHKA pipeline file</smdep>
   <var>variable</var>
   
-  ## Pseudocode of IHKA pipeline as is
+  ## Sketch of IHKA pipeline
   
   <smdep>sm_MakeAll_getPowerPerChannel</smdep> computes wavelet transforms and saves to disk as `.dat` file. 
   - Finds all <file>raw.edf</file> and <file>raw.txt</file> pairs inside of <fold>raw_data</fold>
