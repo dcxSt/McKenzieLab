@@ -18,8 +18,8 @@ ops.ClassifierFileOutput = '/Users/steve/Documents/code/unm/McKenzieLab/data/h24
 %%
 
 % extract the features (each group is an element of the cell array)
-ops.nGroup  = length(dat);
-training = cell2mat(dat');
+ops.nGroup  = length(dat); % How many time bins = ops.nbins 
+training = cell2mat(dat'); % Transpose
 
 % define the groups (1:length(dat))
 group = cell2mat(cellfun(@(a,b) b*ones(size(a,1),1),dat,num2cell(1:length(dat)),'uni',0)');
