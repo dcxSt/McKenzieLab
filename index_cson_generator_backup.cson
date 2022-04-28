@@ -1,5 +1,5 @@
 createdAt: "2022-04-19T14:21:59.567Z"
-updatedAt: "2022-04-27T13:41:19.678Z"
+updatedAt: "2022-04-28T09:50:34.020Z"
 type: "MARKDOWN_NOTE"
 folder: "36748f63b14206359257"
 title: "McKenzieLab Repository, Matlab code"
@@ -97,19 +97,19 @@ content: '''
   - **ops.pct** The ratio at which to sample data from each of the time bins `ops.bins`, e.g. `[.05 .05 .2 1 1 .2]`. The length is `len(ops.bins) + 2`, the extra two on the end correspond to the intra-ictal and post-ictal sampling ratios. Mnemonic: "percent".
   - **ops.nCh_featureFile** is this the number of frequency channels in the wavelet transform (-> hyper param) or the number of electrode channels (-> data param)?
   - **ops.nBins** Length of `ops.pct` which is 2 greater than the length of `ops.bins`. Comment: think of cleaner way to encapsulate `pct` and `bins`. 
-  - **ops.timPost** Defines the interval of time in seconds between seizure offset and official commencement of post-ictal time. e.g. `600` *Note to self: verify this definition, especially the 'after seizure offset' part; what is the seizure offset, did I guess it right?*
-  - **ops.freqs** The frequencies of the wavelets chosen for convolution (in Hz?). Logspace is more informative. e.g. `logspace(log10(.5),log10(200),20`. 
+  - **ops.timPost** `=600` (10 mins) Defines the time interval in seconds between the end of the seizure, which is the start of the post-ictal phase, and the end of the post-ictal phase. 
+  - **ops.freqs** `=logspace(log10(.5),log10(200),20)` The frequencies (in Hz) of the wavelets chosen for convolution. In MatLab the `logspace(x,y,z)` is equivalent to the python `10**np.linspace(x,y,z)`; so the above is a logarithmically spaced spectrum between 0.5Hz and 200Hz. 
   - **ops.durFeat** Duration in seconds of windows used by model and in featurizing. e.g. `5`
   - **ops.nCh_featureFile** Number of channels in the `.dat` files. e.g. `41`—this number comes from 20 power, 20 phase, 1 time series
   
   ***Data Parameters***
   - **ops.Fs** Sample rate, in Hz. e.g. `2000`
-  - **ops.amp_idx** indices of selected selected amplitude (power). e.g. `15:20` *Why are only a subset used? There is a comment that says "must match index in getPowerPerChannel"*
-  - **ops.ph_idx** indices of selected phase e.g. `1:10`. There is a comment that says "must match index in getPowerPerChannel"
-  - **ops.reScalePhase** e.g. `1000` *What does this do, why 1000?*
-  - **ops.reScalePower** e.g. `1000` *What does this do, why 1000?*
-  - **ops.nCh_raw** Number of hardware (electrode) channels. e.g. `4` in the case of the mouse.
-  - **ops.ch_phaseAmp** Todo with the channel for phase amplitude coupling. `=2` (see comment below)
+  - **ops.amp_idx** indices of selected selected amplitude (power). e.g. `15:20` We only use a subset of the channels, because biologically, all of the interesting information is contained in the higher frequency channels. That is to say `[15,16,17,18,19,20]`. *In reality we need to add 1 to these indices (at lease in the Matlab indexing style), (and those of the phase index below) because the first channel is the original time-series.*
+  - **ops.ph_idx** indices of selected phase e.g. `1:10`. There is a comment that says "must match index in getPowerPerChannel"—we ought to get rid of duplicate values in code. 
+  - **ops.reScalePhase** `=1000` Rescales the phase to make the most of our 16bit signed integer range. The phase is in the interval (-pi,pi], so we multiply it so that this range becomes approximately (-3142,3142]. For reference the 16bit signed integer range is [−32768,32767], so we can still scale it up by 10x, but this is probably unnecessary. 
+  - **ops.reScalePower** `=1000` We use this factor to scale the power time-series. This does lead to a small amount of clipping because, unlike the phase, the power zscore is, in principle, unbounded. However, in practice all of the clipped data is noise. 
+  - **ops.nCh_raw** Number of hardware (electrode) channels. `=4` in the case of mouse data.
+  - **ops.ch_phaseAmp** `=2`, selects the channel for which to compute phase amplitude coupling. 
   
   ***Training Parameters***
   - <red>**ops.N**</red> (int) The number of observations in the training sample. Currently this is set to half the length of `training`. 
@@ -123,8 +123,8 @@ content: '''
   
   ***Misc***
   - **ops.features** This variable binds to the function <smdep>sm_PredictIHKA_calcFeatures</smdep>
-  - <red>**ops.nGroup**</red> is defined as `length(dat)`, where `dat` is some global variable containing some form of data *What data? I figured it out at some point but forgot... TODO, next time you figure it out write the information here!*
-  - <red>**ops.rix**</red> A random sample of indices for training sample. *In the code I think it's just a re-arrangement of all the indices for group. Only used to shuffle the group variable. `group` is some function of `dat`*
+  - <red>**ops.nGroup**</red> is defined as `length(dat)`, where `dat` is some global variable containing some form of data. This parameter is infact a duplicate of **ops.n_bins**.  
+  - <red>**ops.rix**</red> A random sample of indices for training sample. *In the code I think it's just a re-arrangement of all the indices for group. Only used to shuffle the group variable. `group` is some function of `dat`.* This is not a parameter because it's a randomly selected sample—it's not user-defined, it is derived from a random process whos parameters are user-defined, but its self is not a user-defined param. However it is needed for validation. 
   
   
   *There is a comment that reads*
@@ -189,6 +189,9 @@ content: '''
   
   ## Refs
   - [The NWB Software Ecosystem – Neurodata Without Borders](https://www.nwb.org/nwb-software/) 
+  
+  
+  
   
   
   <br/><br/><br/><br/><br/>

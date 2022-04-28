@@ -1510,20 +1510,20 @@ document.addEventListener('DOMContentLoaded', displayCodeBlocks);
 <li data-line="87"><strong>ops.pct</strong> The ratio at which to sample data from each of the time bins <code>ops.bins</code>, e.g. <code>[.05 .05 .2 1 1 .2]</code>. The length is <code>len(ops.bins) + 2</code>, the extra two on the end correspond to the intra-ictal and post-ictal sampling ratios. Mnemonic: “percent”.</li>
 <li data-line="88"><strong>ops.nCh_featureFile</strong> is this the number of frequency channels in the wavelet transform (-&gt; hyper param) or the number of electrode channels (-&gt; data param)?</li>
 <li data-line="89"><strong>ops.nBins</strong> Length of <code>ops.pct</code> which is 2 greater than the length of <code>ops.bins</code>. Comment: think of cleaner way to encapsulate <code>pct</code> and <code>bins</code>.</li>
-<li data-line="90"><strong>ops.timPost</strong> Defines the interval of time in seconds between seizure offset and official commencement of post-ictal time. e.g. <code>600</code> <em>Note to self: verify this definition, especially the ‘after seizure offset’ part; what is the seizure offset, did I guess it right?</em></li>
-<li data-line="91"><strong>ops.freqs</strong> The frequencies of the wavelets chosen for convolution (in Hz?). Logspace is more informative. e.g. <code>logspace(log10(.5),log10(200),20</code>.</li>
+<li data-line="90"><strong>ops.timPost</strong> <code>=600</code> (10 mins) Defines the time interval in seconds between the end of the seizure, which is the start of the post-ictal phase, and the end of the post-ictal phase.</li>
+<li data-line="91"><strong>ops.freqs</strong> <code>=logspace(log10(.5),log10(200),20)</code> The frequencies (in Hz) of the wavelets chosen for convolution. In MatLab the <code>logspace(x,y,z)</code> is equivalent to the python <code>10**np.linspace(x,y,z)</code>; so the above is a logarithmically spaced spectrum between 0.5Hz and 200Hz.</li>
 <li data-line="92"><strong>ops.durFeat</strong> Duration in seconds of windows used by model and in featurizing. e.g. <code>5</code></li>
 <li data-line="93"><strong>ops.nCh_featureFile</strong> Number of channels in the <code>.dat</code> files. e.g. <code>41</code>—this number comes from 20 power, 20 phase, 1 time series</li>
 </ul>
 <p data-line="95"><strong><em>Data Parameters</em></strong></p>
 <ul>
 <li data-line="96"><strong>ops.Fs</strong> Sample rate, in Hz. e.g. <code>2000</code></li>
-<li data-line="97"><strong>ops.amp_idx</strong> indices of selected selected amplitude (power). e.g. <code>15:20</code> <em>Why are only a subset used? There is a comment that says “must match index in getPowerPerChannel”</em></li>
-<li data-line="98"><strong>ops.ph_idx</strong> indices of selected phase e.g. <code>1:10</code>. There is a comment that says “must match index in getPowerPerChannel”</li>
-<li data-line="99"><strong>ops.reScalePhase</strong> e.g. <code>1000</code> <em>What does this do, why 1000?</em></li>
-<li data-line="100"><strong>ops.reScalePower</strong> e.g. <code>1000</code> <em>What does this do, why 1000?</em></li>
-<li data-line="101"><strong>ops.nCh_raw</strong> Number of hardware (electrode) channels. e.g. <code>4</code> in the case of the mouse.</li>
-<li data-line="102"><strong>ops.ch_phaseAmp</strong> Todo with the channel for phase amplitude coupling. <code>=2</code> (see comment below)</li>
+<li data-line="97"><strong>ops.amp_idx</strong> indices of selected selected amplitude (power). e.g. <code>15:20</code> We only use a subset of the channels, because biologically, all of the interesting information is contained in the higher frequency channels. That is to say <code>[15,16,17,18,19,20]</code>. <em>In reality we need to add 1 to these indices (at lease in the Matlab indexing style), (and those of the phase index below) because the first channel is the original time-series.</em></li>
+<li data-line="98"><strong>ops.ph_idx</strong> indices of selected phase e.g. <code>1:10</code>. There is a comment that says “must match index in getPowerPerChannel”—we ought to get rid of duplicate values in code.</li>
+<li data-line="99"><strong>ops.reScalePhase</strong> <code>=1000</code> Rescales the phase to make the most of our 16bit signed integer range. The phase is in the interval (-pi,pi], so we multiply it so that this range becomes approximately (-3142,3142]. For reference the 16bit signed integer range is [−32768,32767], so we can still scale it up by 10x, but this is probably unnecessary.</li>
+<li data-line="100"><strong>ops.reScalePower</strong> <code>=1000</code> We use this factor to scale the power time-series. This does lead to a small amount of clipping because, unlike the phase, the power zscore is, in principle, unbounded. However, in practice all of the clipped data is noise.</li>
+<li data-line="101"><strong>ops.nCh_raw</strong> Number of hardware (electrode) channels. <code>=4</code> in the case of mouse data.</li>
+<li data-line="102"><strong>ops.ch_phaseAmp</strong> <code>=2</code>, selects the channel for which to compute phase amplitude coupling.</li>
 </ul>
 <p data-line="104"><strong><em>Training Parameters</em></strong></p>
 <ul>
@@ -1537,8 +1537,8 @@ document.addEventListener('DOMContentLoaded', displayCodeBlocks);
 <p data-line="114"><strong><em>Misc</em></strong></p>
 <ul>
 <li data-line="115"><strong>ops.features</strong> This variable binds to the function <smdep>sm_PredictIHKA_calcFeatures</smdep></li>
-<li data-line="116"><red><strong>ops.nGroup</strong></red> is defined as <code>length(dat)</code>, where <code>dat</code> is some global variable containing some form of data <em>What data? I figured it out at some point but forgot… TODO, next time you figure it out write the information here!</em></li>
-<li data-line="117"><red><strong>ops.rix</strong></red> A random sample of indices for training sample. <em>In the code I think it’s just a re-arrangement of all the indices for group. Only used to shuffle the group variable. <code>group</code> is some function of <code>dat</code></em></li>
+<li data-line="116"><red><strong>ops.nGroup</strong></red> is defined as <code>length(dat)</code>, where <code>dat</code> is some global variable containing some form of data. This parameter is infact a duplicate of <strong>ops.n_bins</strong>.</li>
+<li data-line="117"><red><strong>ops.rix</strong></red> A random sample of indices for training sample. <em>In the code I think it’s just a re-arrangement of all the indices for group. Only used to shuffle the group variable. <code>group</code> is some function of <code>dat</code>.</em> This is not a parameter because it’s a randomly selected sample—it’s not user-defined, it is derived from a random process whos parameters are user-defined, but its self is not a user-defined param. However it is needed for validation.</li>
 </ul>
 <p data-line="120"><em>There is a comment that reads</em></p>
 <pre class="code CodeMirror" data-line="121">
@@ -1605,7 +1605,7 @@ document.addEventListener('DOMContentLoaded', displayCodeBlocks);
 <ul>
 <li data-line="181"><a href="https://www.nwb.org/nwb-software/">The NWB Software Ecosystem – Neurodata Without Borders</a></li>
 </ul>
-<p data-line="184"><br/><br/><br/><br/><br/><br />
+<p data-line="187"><br/><br/><br/><br/><br/><br />
 <br/><br/><br/><br/><br/><br />
 <br/><br/><br/><br/><br/></p>
 <style>
