@@ -1,5 +1,5 @@
 createdAt: "2022-04-19T14:21:59.567Z"
-updatedAt: "2022-04-28T09:50:34.020Z"
+updatedAt: "2022-04-28T12:45:47.079Z"
 type: "MARKDOWN_NOTE"
 folder: "36748f63b14206359257"
 title: "McKenzieLab Repository, Matlab code"
@@ -44,7 +44,7 @@ content: '''
   - reads from <fold>raw/data/path</fold> only for <file>patient_xyz_raw.txt</file> files, and from <fold>wavelet/power/path</fold> for <file>patient_xyz.dat</file>
   - <var>ops.bins, ops.pct</var> defines prediction time bins and % of samples to chose from these bins in training resp.
   - <var>sessions</var> stores list of tuples (<file>patient_xyz.txt , patient_xyz.dat</file>)
-  - <var>tims</var> empty list of matrices, <var>tims{i}</var> $N\\times$$M$ where $N$ is the number of seizures in the $i$'th componant and $M$ is the number of bins + 2 (one extra for the intraictal timestamp, one for postictal timestamp)
+  - <var>tims</var> empty list of matrices, <var>tims{i}</var> NxM where N is the number of seizures in the i'th componant and M is the number of bins + 2 (one extra for the intraictal timestamp, one for postictal timestamp)
   - loop: for each session
     - for each preictal time bin
       - call <buzdep>getXPctTim</buzdep> to sample timestamps
@@ -165,7 +165,7 @@ content: '''
   These are questions I'm trying to find answers to, whos answers are central to my utility as an employee. 
   
   - How does the cloud computing & storage payment system work?
-    - Is it tokens? How do tokens work? So far my best guess is that you pay some monthly rate for storage, and then you pay for the computing with a tokens system per in units of *cores* $\\times$ *hours* consumed.
+    - Is it tokens? How do tokens work? So far my best guess is that you pay some monthly rate for storage, and then you pay for the computing with a tokens system per in units of *cores* x *hours* consumed.
   - What data format to use? 
     - It seems like the NWB data format is an attempt to unify neuroscience data formats. It might be short-sighted to keep using .dat files
   
