@@ -7,7 +7,7 @@ function features = sm_PredictIHKA_calcFeatures(fname,tim,ops)
 % INPUTs
 %  fname = basename for feature file, one per channel (fname_ch.dat)
 %  tim = time point in seconds
-%  ops = struct with meta data about how to calculate features
+%  ops = struct with metadata about how to calculate features
 
 % OUTPUT
 %  features = 1xN vector of all features for this timepoint
@@ -95,3 +95,4 @@ end
 
 features = [features comod(:)' cxy(:)'];
 end
+

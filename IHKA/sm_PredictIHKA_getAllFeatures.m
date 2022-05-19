@@ -182,6 +182,9 @@ for i= 1:size(sessions,1)
         
         %save time bins per seizure per subject
         tims{i} = [tims{i};tmp];
+
+        % tims is a 3d cell array with shape (n_sessions,n_seizures,n_bins)
+        % so tims{i} has shape (n_seizures,n_bins) where n_bins is num of cols
         
         
     end
@@ -217,10 +220,12 @@ for i = 1:nSessions                         % just one session for test
         %choose random subset (pct) of samples within each session to train
         %model
         
-        sz{k} = getXPctTim(tims{i}(:,k:k+1), ops.pct(k),1); % what is this variable? (sz?)    
+        sz{k} = getXPctTim(tims{i}(:,k:k+1), ops.pct(k),1); % what is this variable? (sz?) 
         % for each seizure it's grabbing the moments at the timestamps
         % the getXPctTim gets ops.pct(k) percent of the time windows before
-        % the seizure
+        % or after the seizure, at the k'th timestamp
+
+        % sz is a 2d cell array
 
         % last param of getXPctTim is size of windows in seconds
 
@@ -245,7 +250,7 @@ for i = 1:nSessions                         % just one session for test
                     dat{k} = [dat{k};features];
                     
                     % keep track of which session matches which feature
-                    sesID{k} = [sesID{k}; i tim];
+                    sesID{k} = [sesID{k}; i tim]; % what is i ?
                     fprintf("\nHurray %d", ev)
                     %disp(features);
                 catch
@@ -258,7 +263,20 @@ for i = 1:nSessions                         % just one session for test
     
      %save the full feature space
      save(ops.FeatureFileOutput,'dat','sesID','sessions','ops','-v7.3')
-end
 
+     % dat is a 3d nested list with the shape (n_bins,n windows for this bin,dim_feat_space)
+     % sesID is a 3d nested list with shape (n_bins,num_windows_for_this_bin,2)
+
+     % An alternative pythonic way of organizing this information might be a 
+     % dictionary where they keys are bin labels, e.g. 
+     % pre_ictal_bin1 ,  pre_ictal_bin2 , pre_ictal_bin3 , pre_ictal_bin4 , 
+     % intra_ictal_bin , postictal_bin
+     % 
+     % The values would be a tuple containing:
+     %  - Session identifier, perhaps the base name of the binary file
+     %  - Serialized ops, options? perhaps a nested dictionary version of the
+     %    TOML file; or a sub-dictionary?
+     %  - A numpy 2d array of features, size (n_windows,n_features_per_window)
+end
 
 

@@ -1,7 +1,7 @@
 % this function was previously in /Dat_helpers/
 function sm_MergeDats(fnameIn,fnameOut)
 
-% Steve: it seems like this function mergest all the .dat files in
+% Steve: it seems like this function merges all the .dat files in
 %        fnameIn, assuming that they are all time-series of the same
 %        length; and then saves them to fnameOut.
 

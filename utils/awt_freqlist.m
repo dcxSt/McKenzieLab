@@ -1,4 +1,4 @@
-% this function was previously in the buzcode repository in /externalPackages/ directory
+% SF: this function was previously in the buzcode repository in /externalPackages/ directory
 function [wt,freqlist,psi_array] = awt_freqlist(x,Fs,freqlist,type,xi)
 %   awt_freqlist  analytical wavelet transform, where one can specify the list of desired frequencies 
 %   

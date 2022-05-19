@@ -36,7 +36,7 @@ fprintf("length fils_edf = %i\n", length(fils_edf));
 %%% Steve code for testing purposes
 
 % check if file exists
-f_edf = fils_edf{1};  % just pick the one
+f_edf = fils_edf{1};  % Steve: just pick the one (there was previously another for loop around this that I removed when trying to understand the code)
 
 for j = 1:4 % iterate through each channel
     fprintf("\nRunning sm_getPowerPerChannel for channel %i\n", j);
