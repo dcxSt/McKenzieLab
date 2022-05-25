@@ -43,7 +43,7 @@ for ch = 1:nCh_raw
     tmp = LoadBinary(powerFil,'nchannels',nCh_featureFile,'frequency',Fs,'channels',1:nCh_featureFile,'duration', durFeat,'start',tim);
     
     % save mean power (every other channel)
-    features = [features mean(tmp(:,2:2:40))/reScalePower];
+    features = [features mean(tmp(:,2:2:40))/reScalePower]; % is this mean across every channel? I think so.
     
     % save time series
     rD(:,ch) = tmp(:,1);
@@ -85,6 +85,12 @@ cxy = nan(nFreq,nPairs); ix=1;
 for ch1 = 1:4
     for ch2 = ch1+1:4
         [cxy(:,ix),f] = mscohere(rD(:,ch1),rD(:,ch2),[],[],ops.freqs,ops.Fs);
+        % In Python:
+        % from scipy.signal import coherence
+        % # Cannot give frequencies as param, must select them manually
+        % nperseg = len(x) // 8 # so that eight windows fit, trunkates if necessary, which is how MatLab implements this
+        % f,cxy = coherence(x,y,fs=FS,window='hann',nperseg=nperseg,noverlap=nperseg//2)
+        % # Now you can select frequencies
         ix= ix+1;
     end
 end
